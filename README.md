@@ -11,7 +11,7 @@ docker-compose up
 then jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8080
 
 ``` sh
-$ clj
+$ clj -A:dev
 > (go)
 ```
 
