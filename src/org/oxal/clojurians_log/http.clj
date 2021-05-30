@@ -1,5 +1,6 @@
 (ns org.oxal.clojurians-log.http
   (:require [ring.adapter.jetty :as jetty]
+            [integrant.core :as ig]
             [reitit.ring :as ring]))
 
 (defn test-handler [request]
@@ -23,8 +24,9 @@
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Page not found."})}))))
 
-(def server
-  (jetty/run-jetty #((app) %) {:port 8080 :join? false}))
+(defmethod ig/init-key ::server [_ config]
+  (jetty/run-jetty #((app) %)
+                   (-> config (assoc :join? false))))
 
-(comment
+(defmethod ig/halt-key! ::server [_ server]
   (.stop server))
