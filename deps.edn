@@ -1,9 +1,24 @@
 {:paths ["src"]
- :deps {;; App setup & config
+ :deps {;; core
+        org.clojure/clojure {:mvn/version "1.10.2"}
+
+        ;; app setup & config
         integrant/integrant {:mvn/version "0.8.0"}
         integrant/repl      {:mvn/version "0.3.2"}
         aero/aero           {:mvn/version "1.1.6"}
 
         ;; http
         ring/ring {:mvn/version "1.9.3"}
-        metosin/reitit {:mvn/version "0.5.13"}}}
+        metosin/reitit {:mvn/version "0.5.13"}
+        hato/hato {:mvn/version "0.8.0"}
+
+        ;; data formats
+        org.clojure/data.json {:mvn/version "1.0.0"}
+        hiccup/hiccup         {:mvn/version "2.0.0-alpha2"}
+        markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}
+        lambdaisland/uri      {:mvn/version "1.4.54"}
+
+        ;; db
+        com.github.seancorfield/next.jdbc {:mvn/version "1.2.659"}
+        org.postgresql/postgresql {:mvn/version "42.2.10"}
+        com.github.seancorfield/honeysql {:mvn/version "2.0.0-rc2"}}}
