@@ -1,11 +1,17 @@
+DROP table if exists channel CASCADE;
+DROP table if exists "user" CASCADE;
+DROP table if exists "reaction" CASCADE;
+DROP table if exists "file" CASCADE;
+DROP table if exists "message" CASCADE;
+
 CREATE table if not exists channel (
- id integer primary key generated as identity,
+ id integer primary key generated always as identity,
  slack_id text not null,
  "name" text not null
 );
 
 CREATE table if not exists "user" (
- id integer primary key generated as identity,
+ id integer primary key generated always as identity,
  slack_id text not null,
  team_id text,
  "name" text not null,
@@ -37,13 +43,13 @@ CREATE table if not exists "user" (
  );
 
 CREATE table if not exists "file" (
- id integer primary key generated as identity,
+ id integer primary key generated always as identity,
  slack_id text not null,
  channel_id integer references "channel",
  user_id integer references "user",
  ts text,
- created timestamp without timezone,
- "timestamp" timestamp without timezone,
+ created timestamptz,
+ "timestamp" timestamptz,
  "name" text,
  title text,
  mode text,
@@ -58,19 +64,20 @@ CREATE table if not exists "file" (
 );
 
 CREATE table if not exists "message" (
- id integer primary key generated as identity,
+ id integer primary key generated always as identity,
  channel_id integer references channel,
  user_id integer references "user",
  "text" text,
  ts text,
  parent integer references "message",
- deleted_ts text,
+ deleted_ts text
 );
 
 CREATE table if not exists "reaction" (
- id integer primary key generated as identity,
+ id integer primary key generated always as identity,
  user_id integer references "user",
  channel_id integer references "channel",
  message_id integer references "message",
  reaction text,
+ url text
 );
