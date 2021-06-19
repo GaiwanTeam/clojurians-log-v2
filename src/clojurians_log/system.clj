@@ -1,13 +1,14 @@
 (ns clojurians-log.system
-  (:require [integrant.repl :as ig-repl]))
+  (:require [integrant.core :as ig]
+            [integrant.repl :as ig-repl]))
 
 (defn get-config []
-  {:org.oxal.clojurians-log.http/server {:port 8080}
-   :org.oxal.clojurians-log.db.core/datasource {:dbtype "postgres"
+  {:clojurians-log.http/server {:port 8080}
+   :clojurians-log.db.core/datasource {:dbtype "postgres"
                                                 :user "myuser"
                                                 :password "mypass"
                                                 :dbname "clojurians_log"}})
 
-(ig-repl/set-prep! get-config)
+(ig-repl/set-prep! #(doto (get-config) ig/load-namespaces))
 
 (def go ig-repl/go)

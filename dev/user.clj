@@ -4,4 +4,4 @@
   `(requiring-resolve '~sym))
 
 (defn go [& [opts]]
-  ((jit org.oxal.clojurians-log.system/go) opts))
+  ((jit clojurians-log.system/go) opts))
