@@ -1,4 +1,4 @@
-(ns org.oxal.clojurians-log.http
+(ns clojurians-log.http
   (:require [ring.adapter.jetty :as jetty]
             [integrant.core :as ig]
             [reitit.ring :as ring]))

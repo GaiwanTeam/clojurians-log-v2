@@ -1,4 +1,4 @@
-(ns org.oxal.clojurians-log.db.migrations
+(ns clojurians-log.db.migrations
   (:require [migratus.core :as migratus]))
 
 

@@ -1,4 +1,4 @@
-(ns org.oxal.clojurians-log.db.core
+(ns clojurians-log.db.core
   (:require [integrant.core :as ig]
             [next.jdbc :as jdbc]))
 

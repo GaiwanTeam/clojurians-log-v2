@@ -1,4 +1,4 @@
-(ns org.oxal.clojurians-log.system
+(ns clojurians-log.system
   (:require [integrant.repl :as ig-repl]))
 
 (defn get-config []
