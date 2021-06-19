@@ -20,3 +20,11 @@ To use psql on the docker postgres
 ``` sh
 docker exec -it clojurians-log-v2_db_1 psql -U myuser clojurians_log
 ```
+
+To use pgcli instead
+
+``` sh
+pip install -U pgcli
+make pgcli 
+# if it asks for a pass enter "mypass"
+```
