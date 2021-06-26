@@ -17,6 +17,7 @@
         hiccup/hiccup         {:mvn/version "2.0.0-alpha2"}
         markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}
         lambdaisland/uri      {:mvn/version "1.4.54"}
+        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.2"}
 
         ;; db
         com.github.seancorfield/next.jdbc {:mvn/version "1.2.659"}

@@ -3,6 +3,7 @@
             [clojure.java.io :as io]
             [honey.sql :as sql]
             [clojurians-log.utils :as utils]
+            [camel-snake-kebab.core :as csk]
             [clojure.walk :as w]
             [next.jdbc :as jdbc]
             [integrant.repl.state :as ig-state]
@@ -12,23 +13,24 @@
   (-> path
       io/resource
       slurp
-      (json/read-str :key-fn keyword)))
+      (json/read-str :key-fn csk/->kebab-case-keyword)))
 
 (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
 (defn channels
   "Imports channels idempotently based on the slack_id"
-  []
+  [ds]
   (let [data (read-json-from-file "sample_data/channels.json")
         data (into []
                    (comp
-                    (map #(utils/select-keys-nested-as % [:id
-                                                          :name
-                                                          {:keys [:topic :value]
-                                                           :rename :topic}
-                                                          {:keys [:purpose :value]
-                                                           :rename :purpose}]))
-                    (map #(set/rename-keys % {:id :slack-id})))
+                    (map #(utils/select-keys-nested-as
+                           % [{:keys :id
+                               :rename :slack-id}
+                              :name
+                              {:keys [:topic :value]
+                               :rename :topic}
+                              {:keys [:purpose :value]
+                               :rename :purpose}])))
                    data)
         sqlmap {:insert-into [:channel]
                 :values data
@@ -36,4 +38,58 @@
                 :do-update-set {:fields [:name :topic :purpose]}}]
     (jdbc/execute! ds (sql/format sqlmap))))
 
-(channels)
+(defn users
+  "Imports users idempotently based on the (slack) id"
+  [ds]
+  (let [data (read-json-from-file "sample_data/users.json")
+        data (into []
+                   (comp
+                    (map #(utils/select-keys-nested-as
+                           % [:name
+                              {:keys [:id]
+                               :rename :slack-id}
+                              :team-id
+                              [:profile :real-name]
+                              [:profile :real-name-normalized]
+                              [:profile :display-name]
+                              [:profile :display-name-normalized]
+                              [:profile :first-name]
+                              [:profile :last-name]
+                              [:profile :title]
+                              [:profile :skype]
+                              [:profile :phone]
+                              :is-admin
+                              :is-bot
+                              :tz
+                              :tz-offset
+                              :tz-label
+                              :deleted
+                              :bot-id
+                              :is-email-confirmed])))
+                   data)
+        _ (println (first data))
+        sqlmap {:insert-into ["user"]
+                :values data
+                :on-conflict :slack-id
+                :do-update-set {:fields [:name
+                                         :team-id
+                                         :real-name
+                                         :real-name-normalized
+                                         :display-name
+                                         :display-name-normalized
+                                         :first-name
+                                         :last-name
+                                         :title
+                                         :skype
+                                         :phone
+                                         :is-admin
+                                         :is-bot
+                                         :tz
+                                         :tz-offset
+                                         :tz-label
+                                         :deleted
+                                         :bot-id
+                                         :is-email-confirmed]}}
+        sqlquery (sql/format sqlmap)
+        _ (println sqlquery)]
+    (jdbc/execute! ds sqlquery)))
