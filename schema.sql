@@ -6,13 +6,15 @@ DROP table if exists "message" CASCADE;
 
 CREATE table if not exists channel (
  id integer primary key generated always as identity,
- slack_id text not null,
- "name" text not null
+ slack_id text unique not null,
+ "name" text not null,
+ purpose text,
+ topic text
 );
 
 CREATE table if not exists "user" (
  id integer primary key generated always as identity,
- slack_id text not null,
+ slack_id text unique not null,
  team_id text,
  "name" text not null,
  real_name text,
