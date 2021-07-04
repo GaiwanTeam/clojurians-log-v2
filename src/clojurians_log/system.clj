@@ -3,7 +3,8 @@
             [integrant.repl :as ig-repl]))
 
 (defn get-config []
-  {:clojurians-log.http/server {:port 8000}
+  {:clojurians-log.http/server {:port 8000
+                                :ds (ig/ref :clojurians-log.db.core/datasource)}
    :clojurians-log.http/css {}
    :clojurians-log.db.core/datasource {:dbtype "postgres"
                                        :user "myuser"

@@ -52,14 +52,19 @@
         (update resp :body vary-meta assoc :view-fn
                 (comp hiccup/render view))))))
 
-(defn app []
+(defn inject-component-middleware [config]
+  (fn [handler]
+    (fn [request]
+      (handler (merge request config)))))
+
+(defn app [config]
   (ring/ring-handler
    (ring/router
     (routes/routes)
     {:data {:muuntaja   (muuntaja-instance)
             :middleware [muuntaja-middleware/format-middleware
                          view-fn-middleware
-                         ]}})
+                         (inject-component-middleware config)]}})
    (ring/routes
     (ring/redirect-trailing-slash-handler {:method :add})
     (ring/create-resource-handler {:path "/" :root "public"})
@@ -67,7 +72,7 @@
      {:not-found (constantly {:status 404 :body "Page not found."})}))))
 
 (defmethod ig/init-key ::server [_ config]
-  (jetty/run-jetty #((app) %)
+  (jetty/run-jetty #((app config) %)
                    (-> config (assoc :join? false))))
 
 (defmethod ig/halt-key! ::server [_ server]
