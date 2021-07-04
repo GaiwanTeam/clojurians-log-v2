@@ -1,6 +1,6 @@
 (ns src.clojurians-log.db.import-test
   (:require [clojure.test :refer :all]
-            [src.clojurians-log.db.import :as sut]))
+            [clojurians-log.db.import :as sut]))
 
 (def message->channel-join
   {:type "message",
@@ -78,6 +78,18 @@
    :user "UM4RQHQ0J",
    :text "<@UM4RQHQ0J> set the channel description: Blog posts",
    :purpose "Blog posts"})
+
+(deftest message->tx-test []
+  (let [cache {:channels (hash-map (:team message) 1)
+               :users (hash-map (:user message) 99)}]
+    (is (= {:insert-into [:message]
+            :values [{:channel-id 1
+                      :user-id 99
+                      :text (:text message)
+                      :ts (:ts message)
+                      :parent nil
+                      :deleted-ts nil}]}
+           (sut/message->tx message cache)))))
 
 (deftest event-tx
   {})
