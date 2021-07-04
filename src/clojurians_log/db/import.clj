@@ -1,10 +1,6 @@
 (ns clojurians-log.db.import
   (:require [honey.sql :as sql]))
 
-(def default-cache
-  {:channels {}
-   :users {}})
-
 (defmulti event->tx
   (fn [message cache]
     ((juxt :type :subtype) message)))
@@ -15,9 +11,9 @@
   nil)
 
 (defn message->tx [{:keys [channel-id user text ts thread-ts] :as message}
-                   {:keys [user-slack->db-id] :as cache}]
+                   {:keys [member-slack->db-id] :as cache}]
   (println channel-id)
-  (let [user-id (get user-slack->db-id user)
+  (let [member-id (get member-slack->db-id user)
         parent-ts (if thread-ts
                     {:select [:id]
                      :from [:message]
@@ -27,7 +23,7 @@
                              [:= :channel-id channel-id]]}
                     nil)]
     {:channel-id channel-id
-     :user-id user-id
+     :member-id member-id
      :text text
      :ts ts
      :parent parent-ts

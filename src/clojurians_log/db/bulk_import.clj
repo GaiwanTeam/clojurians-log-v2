@@ -29,8 +29,8 @@
                 :do-update-set {:fields [:name :topic :purpose]}}]
     (jdbc/execute! ds (sql/format sqlmap))))
 
-(defn users
-  "Imports users idempotently based on the (slack) id"
+(defn members
+  "Imports members idempotently based on the (slack) id"
   [ds]
   (let [data (utils/read-json-from-file "sample_data/users.json")
         data (into []
@@ -59,7 +59,7 @@
                               :is-email-confirmed])))
                    data)
         _ (println (first data))
-        sqlmap {:insert-into ["user"]
+        sqlmap {:insert-into [:member]
                 :values data
                 :on-conflict :slack-id
                 :do-update-set {:fields [:name
@@ -132,10 +132,11 @@
 (comment
   (defn get-cache []
     {:chan-name->id (chan-cache ds)
-     :user-slack->db-id {}})
+     :member-slack->db-id (member-cache ds)})
 
   (do
     (channels ds)
+    (members ds)
     (messages ds "general" (get-cache)))
 
  ,)
