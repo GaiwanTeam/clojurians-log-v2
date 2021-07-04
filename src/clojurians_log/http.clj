@@ -24,7 +24,8 @@
     [:title "Clojurians log v2"]
     [:meta {:charset "UTF-8"}]
     [:meta {:content "width=device-width, initial-scale=1" :name "viewport"}]
-    [:link {:rel "stylesheet" :href "styles.css"}]
+    (when (io/resource "public/css/compiled/style.css")
+      [:link {:rel "stylesheet" :href "/css/compiled/style.css"}])
     (if (io/resource "public/css/compiled/ornament.css")
       [:link {:rel "stylesheet" :href "/css/compiled/ornament.css"}]
       [:style {:type "text/css" :id "ornament"} (o/defined-styles)])]

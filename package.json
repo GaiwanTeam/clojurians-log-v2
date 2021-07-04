@@ -1,0 +1,24 @@
+{
+  "scripts": {
+    "postcss:build": "cross-env TAILWIND_MODE=build postcss src/css/style.css -o resources/public/css/compiled/style.css --verbose",
+    "postcss:watch": "cross-env TAILWIND_MODE=watch postcss src/css/style.css -o resources/public/css/compiled/style.css --verbose -w",
+    "postcss:release": "cross-env NODE_ENV=production postcss src/css/style.css -o resources/public/css/compiled/style.css --verbose",
+    "server:watch": "",
+    "dev": "run-p -l *:watch",
+    "release": "run-s *:release"
+  },
+  "devDependencies": {
+    "@tailwindcss/jit": "^0.1.18",
+    "autoprefixer": "^10.2.5",
+    "cssnano": "^5.0.1",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.2.12",
+    "postcss-cli": "^8.3.1",
+    "postcss-import": "^14.0.1",
+    "tailwindcss": "^2.2.4"
+  },
+  "dependencies": {
+    "@tailwindcss/forms": "^0.3.2",
+    "cross-env": "^7.0.3"
+  }
+}
