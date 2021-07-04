@@ -80,15 +80,15 @@
    :purpose "Blog posts"})
 
 (deftest message->tx-test []
-  (let [cache {:chan-slack->db-id (hash-map (:team message) 1)
-               :user-slack->db-id (hash-map (:user message) 99)}]
-    (is (= {:insert-into [:message]
-            :values [{:channel-id 1
-                      :user-id 99
-                      :text (:text message)
-                      :ts (:ts message)
-                      :parent nil
-                      :deleted-ts nil}]}
+  (let [cache {:chan-name->id {}
+               :user-slack->db-id (hash-map (:user message) 99)}
+        message (assoc message :channel-id 1)]
+    (is (= {:channel-id 1
+            :user-id 99
+            :text (:text message)
+            :ts (:ts message)
+            :parent nil
+            :deleted-ts nil}
            (sut/message->tx message cache)))))
 
 (deftest event-tx

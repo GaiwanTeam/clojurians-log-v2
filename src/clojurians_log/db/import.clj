@@ -14,24 +14,24 @@
   ;; about
   nil)
 
-(defn message->tx [{:keys [team user text ts thread-ts] :as message}
-                   {:keys [chan-slack->db-id user-slack->db-id] :as cache}]
+(defn message->tx [{:keys [channel-id user text ts thread-ts] :as message}
+                   {:keys [user-slack->db-id] :as cache}]
+  (println channel-id)
   (let [user-id (get user-slack->db-id user)
-        channel-id (get chan-slack->db-id team)
         parent-ts (if thread-ts
                     {:select [:id]
                      :from [:message]
+                     :limit 1
                      :where [:and
                              [:= :ts thread-ts]
                              [:= :channel-id channel-id]]}
                     nil)]
-    {:insert-into [:message]
-     :values [{:channel-id channel-id
-               :user-id user-id
-               :text text
-               :ts ts
-               :parent parent-ts
-               :deleted-ts nil}]}))
+    {:channel-id channel-id
+     :user-id user-id
+     :text text
+     :ts ts
+     :parent parent-ts
+     :deleted-ts nil}))
 
 (defmethod event->tx ["message" nil] [message cache]
   (message->tx message cache))
@@ -44,5 +44,6 @@
   (event->tx (assoc message :channel channel)))
 
 (defmethod event->tx ["message" "thread_broadcast"] [message cache]
-  (assoc
-   (message->tx message) :message/thread-broadcast? true))
+  {}
+  #_(assoc
+     (message->tx message) :message/thread-broadcast? true))
