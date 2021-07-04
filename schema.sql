@@ -72,7 +72,8 @@ CREATE table if not exists "message" (
  "text" text,
  ts text,
  parent integer references "message",
- deleted_ts text
+ deleted_ts text,
+ UNIQUE (channel_id, ts)
 );
 
 CREATE table if not exists "reaction" (
