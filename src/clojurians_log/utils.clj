@@ -17,8 +17,10 @@
           (map select)
           paths)))
 
-(defn read-json-from-file [path]
-  (-> path
-      io/resource
-      slurp
-      (json/read-str :key-fn csk/->kebab-case-keyword)))
+(defn read-json-from-file [f]
+  (let [file (if (string? f)
+               (io/resource f)
+               f)]
+    (-> file
+        slurp
+        (json/read-str :key-fn csk/->kebab-case-keyword))))
