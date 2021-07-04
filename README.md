@@ -28,3 +28,13 @@ pip install -U pgcli
 make pgcli 
 # if it asks for a pass enter "mypass"
 ```
+
+To initialise schema, open pgcli and then load the schema file
+
+``` sql
+\i schema.sql
+```
+
+this can be done again to reset the database to a clean slate.
+
+For populating the db from a slack archive, check `bulk_import.clj` file.
