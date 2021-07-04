@@ -14,8 +14,24 @@
   ;; about
   nil)
 
-(defn message->tx [message cache]
-  {})
+(defn message->tx [{:keys [team user text ts thread-ts] :as message}
+                   {:keys [chan-slack->db-id user-slack->db-id] :as cache}]
+  (let [user-id (get user-slack->db-id user)
+        channel-id (get chan-slack->db-id team)
+        parent-ts (if thread-ts
+                    {:select [:id]
+                     :from [:message]
+                     :where [:and
+                             [:= :ts thread-ts]
+                             [:= :channel-id channel-id]]}
+                    nil)]
+    {:insert-into [:message]
+     :values [{:channel-id channel-id
+               :user-id user-id
+               :text text
+               :ts ts
+               :parent parent-ts
+               :deleted-ts nil}]}))
 
 (defmethod event->tx ["message" nil] [message cache]
   (message->tx message cache))

@@ -80,8 +80,8 @@
    :purpose "Blog posts"})
 
 (deftest message->tx-test []
-  (let [cache {:channels (hash-map (:team message) 1)
-               :users (hash-map (:user message) 99)}]
+  (let [cache {:chan-slack->db-id (hash-map (:team message) 1)
+               :user-slack->db-id (hash-map (:user message) 99)}]
     (is (= {:insert-into [:message]
             :values [{:channel-id 1
                       :user-id 99
