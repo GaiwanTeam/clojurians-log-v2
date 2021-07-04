@@ -1,26 +1,20 @@
 (ns clojurians-log.db.bulk-import
   (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
+            [clojurians-log.utils :as utils]
             [honey.sql :as sql]
             [clojurians-log.utils :as utils]
-            [camel-snake-kebab.core :as csk]
             [clojure.walk :as w]
             [next.jdbc :as jdbc]
             [integrant.repl.state :as ig-state]
             [clojure.set :as set]))
-
-(defn read-json-from-file [path]
-  (-> path
-      io/resource
-      slurp
-      (json/read-str :key-fn csk/->kebab-case-keyword)))
 
 (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
 (defn channels
   "Imports channels idempotently based on the slack_id"
   [ds]
-  (let [data (read-json-from-file "sample_data/channels.json")
+  (let [data (utils/read-json-from-file "sample_data/channels.json")
         data (into []
                    (comp
                     (map #(utils/select-keys-nested-as
@@ -41,7 +35,7 @@
 (defn users
   "Imports users idempotently based on the (slack) id"
   [ds]
-  (let [data (read-json-from-file "sample_data/users.json")
+  (let [data (utils/read-json-from-file "sample_data/users.json")
         data (into []
                    (comp
                     (map #(utils/select-keys-nested-as
