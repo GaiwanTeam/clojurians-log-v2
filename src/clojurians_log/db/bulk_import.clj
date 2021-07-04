@@ -49,6 +49,13 @@
                               [:profile :title]
                               [:profile :skype]
                               [:profile :phone]
+                              ;;[:profile :image-original]
+                              [:profile :image-24]
+                              [:profile :image-32]
+                              [:profile :image-48]
+                              [:profile :image-72]
+                              [:profile :image-192]
+                              [:profile :image-512]
                               :is-admin
                               :is-bot
                               :tz
@@ -74,6 +81,12 @@
                                          :skype
                                          :phone
                                          :is-admin
+                                         :image-24
+                                         :image-32
+                                         :image-48
+                                         :image-72
+                                         :image-192
+                                         :image-512
                                          :is-bot
                                          :tz
                                          :tz-offset
