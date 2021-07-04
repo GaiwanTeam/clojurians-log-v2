@@ -3,6 +3,7 @@
             [lambdaisland.ornament.watcher :as o-watcher]
             [lambdaisland.ornament :as o]
             [lambdaisland.hiccup :as hiccup]
+            [clojurians-log.routes :as routes]
             [clojure.java.io :as io]
             [muuntaja.core :as m]
             [muuntaja.format.core :as muuntaja-format]
@@ -11,28 +12,6 @@
             [reitit.ring :as ring])
   (:import (java.io OutputStream)
            (org.eclipse.jetty.server Server)))
-
-(o/defstyled block :div
-  :border
-  :bg-red-100
-  :w-16
-  :h-4)
-
-(defn layout [body]
-  [:html
-   [:head
-    [:title "Clojurians log v2"]
-    [:meta {:charset "UTF-8"}]
-    [:meta {:content "width=device-width, initial-scale=1" :name "viewport"}]
-    (when (io/resource "public/css/compiled/style.css")
-      [:link {:rel "stylesheet" :href "/css/compiled/style.css"}])
-    (if (io/resource "public/css/compiled/ornament.css")
-      [:link {:rel "stylesheet" :href "/css/compiled/ornament.css"}]
-      [:style {:type "text/css" :id "ornament"} (o/defined-styles)])]
-   [:body
-    [:div#app
-     body]
-    #_[:script {:type "application/javascript" :src (str "/ui/" (get-script-name :main))}]]])
 
 (defn html-encoder
   "Muuntaja encoder that renders HTML
@@ -66,21 +45,6 @@
                    {:name :html
                     :encoder [html-encoder]}))))))
 
-(defn test-handler [request]
-  {:status 200
-   :body "Hello test!!!"})
-
-(defn handler [request]
-  {:status 200
-   :view (comp layout
-               (fn [data]
-                 [block [:a {:href "#"} "Lol"]]))
-   :body {:e 123}})
-
-(defn routes []
-  [["/" {:get handler}]
-   ["/ww/" {:get test-handler}]])
-
 (defn view-fn-middleware [handler]
   (fn [request]
     (let [resp (handler request)]
@@ -91,7 +55,7 @@
 (defn app []
   (ring/ring-handler
    (ring/router
-    (routes)
+    (routes/routes)
     {:data {:muuntaja   (muuntaja-instance)
             :middleware [muuntaja-middleware/format-middleware
                          view-fn-middleware
