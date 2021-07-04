@@ -1,5 +1,7 @@
 (ns clojurians-log.routes
   (:require [clojurians-log.layout :as layout]
+            [clojurians-log.components.home :as home]
+            [clojurians-log.db.queries :as queries]
             [lambdaisland.ornament :as o]))
 
 (o/defstyled block :div
@@ -12,12 +14,16 @@
   {:status 200
    :body "Hello test!!!"})
 
-(defn handler [request]
-  {:status 200
-   :view (comp layout/base
-               (fn [data]
-                 [block [:a {:href "#"} "Lol"]]))
-   :body {:e 123}})
+(defn handler [{:keys [ds] :as request}]
+  (let [msgs (queries/all-messages ds)]
+    {:status 200
+     :view (comp layout/base
+                 (fn [data]
+                   [:div
+                    #_[block [:a {:href "#"} "Lol"]]
+                    [home/section msgs]
+                    ]))
+     :body {:e 123}}))
 
 (defn routes []
   [["/" {:get handler}]
