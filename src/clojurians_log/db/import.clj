@@ -12,7 +12,6 @@
 
 (defn message->tx [{:keys [channel-id user text ts thread-ts] :as message}
                    {:keys [member-slack->db-id] :as cache}]
-  (println channel-id)
   (let [member-id (get member-slack->db-id user)
         parent-ts (if thread-ts
                     {:select [:id]

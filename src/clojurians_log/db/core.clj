@@ -5,7 +5,7 @@
 (defmethod ig/init-key ::datasource [_ config]
   ;; TODO: add connection pooling
   (let [ds (jdbc/get-datasource config)]
-    ds))
+    (jdbc/with-options ds jdbc/unqualified-snake-kebab-opts)))
 
 (defmethod ig/halt-key! ::datasource [_ datasource]
   ())

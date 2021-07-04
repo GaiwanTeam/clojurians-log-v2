@@ -126,17 +126,31 @@
                 :from [:channel]}
         data (jdbc/execute! ds (sql/format sqlmap))]
     (into {}
-          (map (juxt :channel/name :channel/id))
+          (map (juxt :name :id))
+          data)))
+
+(defn member-cache [ds]
+  (let [sqlmap {:select [:id :slack-id]
+                :from [:member]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    (into {}
+          (map (juxt :slack-id :id))
           data)))
 
 (comment
-  (defn get-cache []
-    {:chan-name->id (chan-cache ds)
-     :member-slack->db-id (member-cache ds)})
-
   (do
+    ;; eval buffer then eval this do form to populate db
+    ;; make sure slack archive is stored in src/sample_data
+    (defn exec [sqlmap]
+      (println (sql/format sqlmap))
+      (jdbc/execute! ds (sql/format sqlmap)))
+
+    (defn get-cache []
+      {:chan-name->id (chan-cache ds)
+       :member-slack->db-id (member-cache ds)})
+
     (channels ds)
     (members ds)
     (messages ds "general" (get-cache)))
 
- ,)
+  ,)
