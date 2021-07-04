@@ -1,0 +1,45 @@
+<!-- Logback configuration. See http://logback.qos.ch/manual/index.html 
+     Scan logback.xml for changes, so you can tweak log levels without a restart -->
+<configuration scan="true" scanPeriod="10 seconds">
+
+  <!-- Silence Logback's own status messages about config parsing
+       https://github.com/nextjournal/nextjournal/issues/2526 -->
+  <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+  <!-- Console output -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="CLOUD" class="com.google.cloud.logging.logback.LoggingAppender">
+    <!-- Optional : filter logs at or above a level -->
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <log>application.log</log> <!-- Optional : default java.log -->
+    <!-- <resourceType>gae_app</resourceType> <!-\- Optional : default: auto-detected, fallback: global -\-> -->
+    <!-- <enhancer>com.example.logging.logback.enhancers.ExampleEnhancer</enhancer> <!-\- Optional -\-> -->
+    <flushLevel>INFO</flushLevel> <!-- Optional : default ERROR -->
+  </appender>
+
+  <!-- By default, log INFO and above.  -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+  
+  <!-- Silence Jetty's "logging started" messages -->
+  <logger name="org.eclipse.jetty" level="WARN" />
+  <logger name="org.xnio" level="WARN" />
+  <logger name="io.undertow" level="WARN" />
+  <logger name="org.jboss" level="WARN" />
+
+  <!-- For our own stuff, default to logging everything, as a starting point. Can be -->
+  <!-- fine-tuned for noisy namespaces -->
+  <logger name="user" level="ALL" />
+  <logger name="co.gaiwan" level="ALL" />
+  <logger name="lambdaisland" level="ALL" />
+  <logger name="clojurians_log" level="ALL" />
+  
+</configuration>
