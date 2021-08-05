@@ -9,7 +9,7 @@ clojurians-app instance, and feel that it's quite possible to fix all the existi
 issues in clojurians-log and keep maintaining it.
 
 But the decision to make an independent v2 makes a lot of sense to me personally
-to get a chance to completely re-architect the solution form all the lessons
+to get a chance to completely re-architect the solution from all the lessons
 we've learnt over the years. It also sounds much more exciting 🙈🙈
 
 We will still be able to carry some of the independent modules over and
@@ -19,10 +19,12 @@ Some of the issues **I want to solve/implement** with v2:
 - mobile responsive & usability (this is something I really really want personally)
 - integrating real time search for entire logs (super excited for this)
 - using newer slack api's (the current ones we used are deprecated)
+- real-time logging (no more waiting till the end of the day for
+archive to update), permalinks to threads/conversations
 - slack imports from the beginning of time
 - idempotent incremental archive imports
-- real-time logging (no more waiting till the end of the day for
-archive to update)
+- ability to backfill data in case of server downtime
+- avoid server downtimes, better monitoring
 - improve performance & reduce resource consumption so we can
 run this on a much smaller instance
 - better statistics reporting (automated stats email to admins/staff)
@@ -34,7 +36,7 @@ run this on a much smaller instance
 - slack-bot custom commands
   - delete / anonymise a user
   - automated book & resource recommendations
-  - thread saving
+  - thread saving / voting using emojis
   - many more custom use cases could be supported using emojis & custom commands
 - many more ideas!
 
@@ -71,6 +73,12 @@ A lot of the above features we want to implement is simply not possible with the
 static site. This is why I am trying to create clojurians-log v2 as a dynamic
 server rendered site and keeping in mind of all of the issues we're facing in
 the way we log currently.
+
+## Screenshots
+
+This is the super early alpha version not-to-be-seen-by-anyone-except-me version screenshot 🙈🙈:
+
+![](/screenshot-alpha.png)
 
 ## Development
 
