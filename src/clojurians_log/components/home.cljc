@@ -36,7 +36,7 @@
    [:div {:class "text-white mb-2 mt-3 px-4 flex justify-between"}
     [:div {:class "flex-auto"}
      [:h1 {:class "font-semibold text-xl leading-tight mb-1 truncate"}
-      "Tailwind CSS"]
+      "Clojurians Log"]
      [:div {:class "flex items-center mb-6"}
       [:svg
        {:class "h-2 w-2 fill-current text-green mr-2", :viewbox "0 0 20 20"}
