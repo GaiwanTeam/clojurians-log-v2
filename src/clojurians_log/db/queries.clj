@@ -10,6 +10,13 @@
         data (jdbc/execute! ds (sql/format sqlmap))]
     data))
 
+(defn all-channels [ds]
+  (let [sqlmap {:select [:channel.*]
+                :from [:channel]
+                :order-by [:channel.name]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    data))
+
 (comment
   (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
