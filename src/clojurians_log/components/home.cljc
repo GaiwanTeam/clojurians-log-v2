@@ -29,10 +29,10 @@
         "M16 10c0 .553-.048 1-.601 1H11v4.399c0 .552-.447.601-1 .601-.553 0-1-.049-1-.601V11H4.601C4.049 11 4 10.553 4 10c0-.553.049-1 .601-1H9V4.601C9 4.048 9.447 4 10 4c.553 0 1 .048 1 .601V9h4.399c.553 0 .601.447.601 1z"}]]]]]
   )
 
-(defn channel-list []
+(defn channel-list [channels]
   [:div
    {:class
-    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 hidden md:block"}
+    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 hidden md:block overflow-hidden overflow-y-scroll"}
    [:div {:class "text-white mb-2 mt-3 px-4 flex justify-between"}
     [:div {:class "flex-auto"}
      [:h1 {:class "font-semibold text-xl leading-tight mb-1 truncate"}
@@ -52,54 +52,12 @@
         :fill-rule "evenodd"}]]]]
    [:div {:class "mb-8"}
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
-     [:div {:class "opacity-75"} "Channels"]
-     [:div
-      [:svg
-       {:class "fill-current h-4 w-4 opacity-50",
-        :viewbox "0 0 20 20",
-        :xmlns "http://www.w3.org/2000/svg"}
-       [:path
-        {:d
-         "M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"}]]]]
-    [:div {:class "bg-teal-dark py-1 px-4 text-white"} "# general"]]
-   [:div {:class "mb-8"}
-    [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
-     [:div {:class "opacity-75"} "Direct Messages"]
-     [:div
-      [:svg
-       {:class "fill-current h-4 w-4 opacity-50",
-        :viewbox "0 0 20 20",
-        :xmlns "http://www.w3.org/2000/svg"}
-       [:path
-        {:d
-         "M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"}]]]]
-    [:div {:class "flex items-center mb-3 px-4"}
-     [:svg
-      {:class "h-2 w-2 fill-current text-green mr-2", :viewbox "0 0 20 20"}
-      [:circle {:cx "10", :cy "10", :r "10"}]]
-     [:span {:class "text-white opacity-75"} "Clojurians log "
-      [:span {:class "text-grey text-sm"} "(you)"]]]
-    [:div {:class "flex items-center mb-3 px-4"}
-     [:svg
-      {:class "h-2 w-2 fill-current text-green mr-2", :viewbox "0 0 20 20"}
-      [:circle {:cx "10", :cy "10", :r "10"}]]
-     [:span {:class "text-white opacity-75"} "general"]]
-    [:div {:class "flex items-center px-4 mb-6 opacity-50"}
-     [:svg
-      {:class "h-2 w-2 stroke-current text-white mr-2", :viewbox "0 0 22 22"}
-      [:circle {:cx "11", :cy "11", :fill "none", :r "9", :stroke-width "3"}]]
-     [:span {:class "text-white"} "random"]]]
+     [:div {:class "opacity-75"} "Channels"]]
+    (for [channel channels]
+      [:div {:class "bg-teal-dark py-1 px-4 text-white"} (str "# " (:name channel))])]
    [:div
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
-     [:div {:class "opacity-75"} "Apps"]
-     [:div
-      [:svg
-       {:class "fill-current h-4 w-4 opacity-50",
-        :viewbox "0 0 20 20",
-        :xmlns "http://www.w3.org/2000/svg"}
-       [:path
-        {:d
-         "M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"}]]]]]])
+     [:div {:class "opacity-75"} "Apps"]]]])
 
 (defn top-bar []
   [:div {:class "border-b flex px-6 py-2 items-center flex-none"}
@@ -164,15 +122,15 @@
        :href "#"} "@Clojurians log"]
      " the size of the generated CSS is creating a singularity in space/time, we must stop adding more utilities before it's too late!"]]])
 
-(defn section [msgs]
+(defn section [{:keys [messages channels]}]
   [:div {:class "font-sans antialiased h-screen flex"}
-   (channel-list)
+   (channel-list channels)
    #_[:comment " Chat content "]
    [:div {:class "flex-1 flex flex-col bg-white overflow-hidden"}
     (top-bar)
     #_[:comment " Chat messages "]
     [:div {:class "px-6 py-4 flex-1 overflow-y-scroll"}
-     (for [msg msgs]
+     (for [msg messages]
        (message msg))]
     #_[:div {:class "pb-6 px-4 flex-none"}
        [:div {:class "flex rounded-lg border-2 border-grey overflow-hidden"}
