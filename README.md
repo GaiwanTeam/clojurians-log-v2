@@ -76,9 +76,9 @@ the way we log currently.
 
 ## Screenshots
 
-This is the super early alpha version not-to-be-seen-by-anyone-except-me version screenshot 🙈🙈:
+![image](https://user-images.githubusercontent.com/4194289/129220923-e922ad97-43d0-4af6-9f30-9c3cf4d15054.png)
 
-![](/screenshot-alpha.png)
+![image](https://user-images.githubusercontent.com/4194289/129221132-1f8e4594-828f-4b19-98ed-a47291e042b7.png)
 
 ## Development
 
