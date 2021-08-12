@@ -107,7 +107,8 @@
   "Imports messages idempotently based on the slack_id"
   [ds channel cache]
   (let [channel-dir (io/file (str "src/sample_data/" channel))
-        msg-files (file-seq channel-dir)]
+        msg-files (sort (file-seq channel-dir))]
+    (println "Importing from channel:" channel)
     (doseq [msg-file msg-files]
       (when (.isFile msg-file)
         (println "Importing from file:" (.getAbsolutePath msg-file))
