@@ -7,23 +7,35 @@
 (defn handler [{:keys [ds] :as request}]
   (let [msgs (queries/all-messages ds)]
     {:status 200
+     :body {:channels (queries/all-channels ds)
+            :messages msgs}
      :view (fn [data]
              [layout/base
-              [common/home-page data]])
-     :body {:channels (queries/all-channels ds)
-            :messages msgs}}))
+              [common/home-page data]])}))
 
 (defn channel-handler [{:keys [ds path-params] :as request}]
   (let [channel (queries/channel-by-name ds (:channel path-params))
         channels (queries/all-channels ds)
         message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
     {:status 200
-     :view (fn [data]
-             [layout/base
-              [common/channel-page data]])
      :body {:channels channels
             :channel channel
-            :message-counts-by-date message-counts-by-date}}))
+            :message-counts-by-date message-counts-by-date}
+     :view (fn [data]
+             [layout/base
+              [common/channel-page data]])}))
+
+(defn channel-date-handler [{:keys [ds path-params] :as request}]
+  (let [channel (queries/channel-by-name ds (:channel path-params))
+        channels (queries/all-channels ds)
+        message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
+    {:status 200
+     :body {:channels channels
+            :channel channel
+            :message-counts-by-date message-counts-by-date}
+     :view (fn [data]
+             [layout/base
+              [common/channel-page data]])}))
 
 (defn routes []
   [["/" {:get handler}]
