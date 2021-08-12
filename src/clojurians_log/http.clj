@@ -61,7 +61,8 @@
   (ring/ring-handler
    (ring/router
     (routes/routes)
-    {:data {:muuntaja   (muuntaja-instance)
+    {:conflicts nil
+     :data {:muuntaja   (muuntaja-instance)
             :middleware [muuntaja-middleware/format-middleware
                          view-fn-middleware
                          (inject-component-middleware config)]}})
