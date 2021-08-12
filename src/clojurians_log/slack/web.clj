@@ -36,7 +36,7 @@
         response (http/get full-url (merge {:oauth-token token
                                             :throw-exceptions? false}) opts)]
     (if-let [body (:body response)]
-      (json/read-str body :key-fn clojure.core/keyword #_csk/->kebab-case-keyword)
+      (json/read-str body :key-fn #_clojure.core/keyword csk/->kebab-case-keyword)
       (do
         ;; Slack normally returns a JSON body with `:ok false`, so this is for
         ;; truly exceptional cases

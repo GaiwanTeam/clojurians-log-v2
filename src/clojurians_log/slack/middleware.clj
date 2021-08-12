@@ -9,7 +9,6 @@
     (try
       (apply f args)
       (catch clojure.lang.ExceptionInfo ex
-        (println "woot?")
         (let [data (ex-data ex)]
           (if (= 429 (:status data))
             (let [wait-for (Integer/parseInt (get-in data [:headers "retry-after"]))]
@@ -39,22 +38,19 @@
     ([conn]
      (paginate conn {}))
     ([conn opts]
-     (println "w0000t")
      (let [opts* (if (:limit opts)
                    opts
                    (assoc opts :limit 1000))
            resp (f conn opts*)
            lazy-f (fn lazy-f [{:keys [ok] :as resp}]
                     (if ok
-                      (let [cursor (get-in resp [:response_metadata :next_cursor])]
+                      (let [cursor (get-in resp [:response-metadata :next-cursor])]
                         (lazy-cat (get resp k)
                                   (when-not (empty? cursor)
                                     (lazy-f (f conn (merge opts* {:cursor cursor}))))))
                       (when error-logger
                         (error-logger resp))))]
-       (println (:response_metadata resp))
        (if (:ok resp)
          (do
-           (println "laxy-f")
            (lazy-f resp))
          resp)))))
