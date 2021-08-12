@@ -71,6 +71,7 @@ CREATE table if not exists message (
  member_id integer references member,
  text text,
  ts text,
+ created_at timestamptz,
  parent integer references message,
  deleted_ts text,
  UNIQUE (channel_id, ts)
