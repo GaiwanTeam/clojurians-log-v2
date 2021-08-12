@@ -10,6 +10,20 @@
         data (jdbc/execute! ds (sql/format sqlmap))]
     data))
 
+(defn messages-by-channel-date [ds channel-id date]
+  (let [sqlmap {:select [:message.* :member.*]
+                :from [:message]
+                :where [:and
+                        [:= :message.channel-id channel-id]
+                        [:= [[:cast :message.created-at :DATE]] [:cast date :DATE]]]
+                :order-by [:message.id]
+                :join [:member [:= :message.member-id :member.id]] 
+                }
+        query (sql/format sqlmap)
+        _ (println query)
+        data (jdbc/execute! ds query)]
+    data))
+
 (defn channel-by-name [ds channel-name]
   (let [sqlmap {:select [:*]
                 :from [:channel]

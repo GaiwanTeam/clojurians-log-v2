@@ -83,15 +83,15 @@
         {:d
          "M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"}]]]]]])
 
-(defn message [{:keys [image-192 text display-name]}]
+(defn message [{:keys [image-192 text display-name created-at]}]
   [:div {:class "flex items-start mb-4 text-sm"}
    [:img
     {:class "w-10 h-10 rounded mr-3",
      :src image-192}]
    [:div {:class "flex-1 overflow-hidden"}
     [:div [:span {:class "font-bold"} display-name]
-     [:span {:class "text-grey text-xs"} "11:46"]]
-    [:p {:class "text-black leading-normal"}
+     [:span {:class "text-grey text-xs"} (str " " created-at)]]
+    [:p {:class "text-black leading-normal"} 
      text]]])
 
 (defn message-with-code []
@@ -148,7 +148,8 @@
             :class "text-indigo-700 p-1"}
         (str created-at "  --- (" count " messages)")]])]])
 
-(defn channel-date-page [{:keys [channels messages message-counts-by-date]}]
-  [slack-layout {:channels channels}
+(defn channel-date-page [{:keys [channels channel messages date]}]
+  [slack-layout
+   {:channels channels :title (:name channel) :subtitle (:topic channel)}
    (for [msg messages]
-     (message msg))])
+     [message msg])])

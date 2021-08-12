@@ -28,14 +28,17 @@
 (defn channel-date-handler [{:keys [ds path-params] :as request}]
   (let [channel (queries/channel-by-name ds (:channel path-params))
         channels (queries/all-channels ds)
+        messages (queries/messages-by-channel-date ds (:id channel) (:date path-params))
         message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
     {:status 200
      :body {:channels channels
             :channel channel
+            :messages messages
+            :date (:date path-params)
             :message-counts-by-date message-counts-by-date}
      :view (fn [data]
              [layout/base
-              [common/channel-page data]])}))
+              [common/channel-date-page data]])}))
 
 (defn routes []
   [["/" {:get handler}]
@@ -43,4 +46,4 @@
    ["/sitemap" {:get handler}]
    ["/healthcheck" {:get handler}]
    ["/:channel" {:get channel-handler}]
-   ["/:channel/:date" {:get handler}]])
+   ["/:channel/:date" {:get channel-date-handler}]])
