@@ -1,4 +1,4 @@
-(ns clojurians-log.components.home)
+(ns clojurians-log.components.common)
 
 (defn sidebar []
   [:div
@@ -149,7 +149,7 @@
         :type "text"}]]]]]
   )
 
-(defn section [{:keys [messages channels]}]
+(defn home-section [{:keys [messages channels]}]
   [slack-layout {:channels channels}
    (for [msg messages]
      (message msg))])

@@ -1,6 +1,6 @@
 (ns clojurians-log.routes
   (:require [clojurians-log.layout :as layout]
-            [clojurians-log.components.home :as home]
+            [clojurians-log.components.common :as common]
             [clojurians-log.db.queries :as queries]
             [lambdaisland.ornament :as o]))
 
@@ -9,7 +9,7 @@
     {:status 200
      :view (fn [data]
              [layout/base
-              [home/section data]])
+              [common/home-section data]])
      :body {:channels (queries/all-channels ds)
             :messages msgs}}))
 
