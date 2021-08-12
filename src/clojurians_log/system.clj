@@ -17,7 +17,8 @@
    :clojurians-log.db.core/datasource {:dbtype "postgres"
                                        :user "myuser"
                                        :password "mypass"
-                                       :dbname "clojurians_log"}})
+                                       :dbname "clojurians_log"
+                                       :serverTimezone "UTC"}})
 
 (ig-repl/set-prep! #(doto (get-config) ig/load-namespaces))
 
