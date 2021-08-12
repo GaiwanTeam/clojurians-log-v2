@@ -153,12 +153,13 @@
   [slack-layout {:channels channels}
    [:h2 "Welcome!"]])
 
-(defn channel-page [{:keys [channels channel-name message-counts-by-date]}]
-  [slack-layout {:channels channels}
+(defn channel-page [{:keys [channels channel message-counts-by-date]}]
+  [slack-layout
+   {:channels channels :title (:name channel) :subtitle (:topic channel)}
    [:ul {:class "list-styled"}
     (for [{:keys [created-at count]} message-counts-by-date]
       [:li
-       [:a {:href (str "/" channel-name "/" created-at)
+       [:a {:href (str "/" (:name channel) "/" created-at)
             :class "text-indigo-700 p-1"}
         (str created-at "  --- (" count " messages)")]])]])
 

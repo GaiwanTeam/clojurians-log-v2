@@ -10,13 +10,23 @@
         data (jdbc/execute! ds (sql/format sqlmap))]
     data))
 
-(defn channel-message-counts-by-date [ds channel-name]
+(defn channel-by-name [ds channel-name]
+  (let [sqlmap {:select [:*]
+                :from [:channel]
+                :where [:= :name channel-name]}
+        query (sql/format sqlmap)
+        data (jdbc/execute! ds query)]
+    (first data)))
+
+(channel-by-name ds "4clojure")
+
+(defn channel-message-counts-by-date [ds channel-id]
   (let [sqlmap {:select [[[:count :*]]
                          [[:cast :created-at :date]]]
                 :from [:message]
                 :limit 100
                 :where [:and
-                        [:= :channel-id 5]
+                        [:= :channel-id channel-id]
                         [:<> :created-at nil]]
                 :group-by [[:cast :created-at :date]]}
         data (jdbc/execute! ds (sql/format sqlmap))]
