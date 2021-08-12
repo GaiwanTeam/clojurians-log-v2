@@ -54,17 +54,19 @@
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
      [:div {:class "opacity-75"} "Channels"]]
     (for [channel channels]
-      [:div {:class "bg-teal-dark py-1 px-4 text-white"} (str "# " (:name channel))])]
+      [:a {:href (str "/" (:name channel))
+           :class "block hover:bg-indigo-500 py-1 px-4 text-white"}
+       (str "# " (:name channel))])]
    [:div
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
      [:div {:class "opacity-75"} "Apps"]]]])
 
-(defn top-bar []
+(defn top-bar [title subtitle]
   [:div {:class "border-b flex px-6 py-2 items-center flex-none"}
    [:div {:class "flex flex-col"}
-    [:h3 {:class "text-grey-900 mb-1 font-extrabold"} "#general"]
+    [:h3 {:class "text-grey-900 mb-1 font-extrabold"} title]
     [:div {:class "text-grey-dark text-sm truncate"}
-     "Chit-chattin' about ugly HTML and mixing of concerns."]]
+     subtitle]]
    [:div {:class "ml-auto hidden md:block"}
     [:div {:class "relative"}
      [:input
@@ -122,27 +124,32 @@
        :href "#"} "@Clojurians log"]
      " the size of the generated CSS is creating a singularity in space/time, we must stop adding more utilities before it's too late!"]]])
 
-(defn section [{:keys [messages channels]}]
+(defn slack-layout [{:keys [channels title subtitle]
+                     :or {title "Archives"
+                          subtitle "Made with <3 by @oxalorg"}} & body]
   [:div {:class "font-sans antialiased h-screen flex"}
    (channel-list channels)
-   #_[:comment " Chat content "]
    [:div {:class "flex-1 flex flex-col bg-white overflow-hidden"}
-    (top-bar)
-    #_[:comment " Chat messages "]
+    [top-bar title subtitle]
     [:div {:class "px-6 py-4 flex-1 overflow-y-scroll"}
-     (for [msg messages]
-       (message msg))]
-    #_[:div {:class "pb-6 px-4 flex-none"}
-       [:div {:class "flex rounded-lg border-2 border-grey overflow-hidden"}
-        [:span {:class "text-3xl text-grey border-r-2 border-grey p-2"}
-         [:svg
-          {:class "fill-current h-6 w-6 block w-64",
-           :viewbox "0 0 20 20",
-           :xmlns "http://www.w3.org/2000/svg"}
-          [:path
-           {:d
-            "M16 10c0 .553-.048 1-.601 1H11v4.399c0 .552-.447.601-1 .601-.553 0-1-.049-1-.601V11H4.601C4.049 11 4 10.553 4 10c0-.553.049-1 .601-1H9V4.601C9 4.048 9.447 4 10 4c.553 0 1 .048 1 .601V9h4.399c.553 0 .601.447.601 1z"}]]]
-        [:input
-         {:class "w-full px-4",
-          :placeholder "Message #general",
-          :type "text"}]]]]])
+     body]
+    [:div {:class "pb-6 px-4 flex-none"}
+     [:div {:class "flex rounded-lg border-2 border-grey overflow-hidden"}
+      [:span {:class "text-3xl text-grey border-r-2 border-grey p-2"}
+       [:svg
+        {:class "fill-current h-6 w-6 block w-64",
+         :viewbox "0 0 20 20",
+         :xmlns "http://www.w3.org/2000/svg"}
+        [:path
+         {:d
+          "M16 10c0 .553-.048 1-.601 1H11v4.399c0 .552-.447.601-1 .601-.553 0-1-.049-1-.601V11H4.601C4.049 11 4 10.553 4 10c0-.553.049-1 .601-1H9V4.601C9 4.048 9.447 4 10 4c.553 0 1 .048 1 .601V9h4.399c.553 0 .601.447.601 1z"}]]]
+      [:input
+       {:class "w-full px-4",
+        :placeholder "Message #general",
+        :type "text"}]]]]]
+  )
+
+(defn section [{:keys [messages channels]}]
+  [slack-layout {:channels channels}
+   (for [msg messages]
+     (message msg))])
