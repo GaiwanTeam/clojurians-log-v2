@@ -1,5 +1,7 @@
 # Clojurians Log v2
 
+YAY! This project has been funded by ClojuristsTogether: https://www.clojuriststogether.org/news/q3-2021-funding-announcement/
+
 This is a v2 of [clojurians-log-app](https://github.com/clojureverse/clojurians-log-app) 
 
 ## Why v2?
