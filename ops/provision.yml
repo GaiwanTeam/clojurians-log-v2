@@ -1,0 +1,68 @@
+---
+- hosts: all
+  remote_user: root
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install packages
+      apt:
+        name:
+          - "git"
+          - "fail2ban"
+          - "bash"
+          - "curl"
+          - "htop"
+          - "rlwrap"
+          - "openjdk-11-jdk"
+          - "debian-keyring"
+          - "debian-archive-keyring"
+          - "apt-transport-https"
+          - "caddy"
+          - "nodejs"
+          - "npm"
+          - "zsh"
+        update-cache: yes
+
+    - name: Make sure we have a 'wheel' group
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow 'wheel' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: visudo -cf %s
+
+    - name: Create a new regular user with sudo privileges
+      user:
+        name: "{{ user_acc }}"
+        state: present
+        groups:
+          - "sudo"
+          - "wheel"
+        append: true
+        create_home: true
+        shell: /bin/zsh
+
+    - name: Set authorized keys taken from url
+      ansible.posix.authorized_key:
+        user: "{{ user_acc }}"
+        state: present
+        key: "{{ item }}"
+      loop:
+        - https://github.com/oxalorg.keys
+      tags:
+        - keys
+
+    - name: Make Root Directory exist
+      file:
+        path: "{{ srv_dir }}"
+        mode: u=rwx,g=rx,o=rx
+        recurse: yes
+        owner: "{{ user_acc }}"
+        group: www-data
+        state: directory
