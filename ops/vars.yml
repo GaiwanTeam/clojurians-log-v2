@@ -1,0 +1,22 @@
+ansible_conf_dir: "."
+user_acc: ox
+key_dir: "~/.deploy-keys"
+key_name: "clojurians-log-v2"
+DEPLOY_KEY_PATH: /home/{{ user_acc }}/.ssh/{{ key_name }}
+
+repo_name: clojurians-log-v2
+repo_url: https://github.com/oxalorg/{{ repo_name }}.git
+repo_remote: origin
+repo_version: main
+
+app_name: clojurians-log-v2
+srv_dir: "/srv/{{ user_acc }}"
+repo_dir: "{{ srv_dir }}/{{ repo_name }}"
+app_dir: "{{ repo_dir }}"
+
+env_file: "{{ app_dir }}/.env"
+pre_deploy_target: "init"
+migrate_target: "db-migrate-prod"
+
+app_env_vars:
+  var_name: "var_value"

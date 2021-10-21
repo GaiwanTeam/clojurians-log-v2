@@ -1,0 +1,102 @@
+---
+- hosts: all
+  remote_user: "{{ user_acc }}"
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: copy priv key to server
+      copy:
+        src: "{{ key_dir }}/{{ key_name }}"
+        dest: "{{ DEPLOY_KEY_PATH }}"
+        owner: "{{ user_acc }}"
+        group: "{{ user_acc }}"
+        mode: 0600
+
+    - name: copy pub key to server
+      copy:
+        src: "{{ key_dir }}/{{ key_name }}.pub"
+        dest: "{{ DEPLOY_KEY_PATH }}.pub"
+        owner: "{{ user_acc }}"
+        group: "{{ user_acc }}"
+        mode: 0644
+
+    - name: ensure srv directory exists
+      file:
+        path: "{{ srv_dir }}"
+        state: "directory"
+        owner: "{{ user_acc }}"
+        group: "{{ user_acc }}"
+      become: yes
+
+    - name: clone/pull project repo
+      tags: code
+      git:
+        repo: "{{ repo_url }}"
+        version: "{{ repo_version }}"
+        dest: "{{ repo_dir }}"
+        accept_hostkey: yes
+        force: yes
+        update: yes
+        depth: 1
+        # key_file: "{{ DEPLOY_KEY_PATH }}"
+      notify:
+        - app daemon reload
+        - app restart
+
+    - name: update environment file
+      tags: env
+      template:
+        src: env.conf.j2
+        dest: "{{ env_file }}"
+      notify:
+        - app daemon reload
+        - app restart
+
+    - name: update app service file
+      tags: env
+      template:
+        src: "{{ app_name }}.service.j2"
+        dest: /etc/systemd/system/{{ app_name }}.service
+      become: yes
+      notify:
+        - app daemon reload
+        - app restart
+
+    - name: ensure app is running
+      systemd: name={{ app_name }} state=started enabled=yes
+      become: yes
+
+    - name: npm install
+      tags: code
+      npm:
+        path: "{{ app_dir }}"
+
+    - name: stop app
+      systemd: name={{ app_name }} state=stopped
+      become: yes
+
+    - name: install deps, build css / js production assets pipeline
+      tags: code
+      make:
+        chdir: "{{ app_dir }}"
+        target: "{{ pre_deploy_target }}"
+
+    # - name: migrate db
+    #   tags: code
+    #   make:
+    #     chdir: "{{ app_dir }}"
+    #     target: "{{ migrate_target }}"
+
+    - name: start app
+      systemd: name={{ app_name }} state=started enabled=yes
+      become: yes
+
+  handlers:
+    - name: app daemon reload
+      systemd: name={{ app_name }} daemon_reload=yes
+      become: yes
+
+    - name: app restart
+      systemd: name={{ app_name }} state=restarted daemon_reload=yes
+      become: yes
