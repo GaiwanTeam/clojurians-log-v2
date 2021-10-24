@@ -32,4 +32,9 @@
  :aliases {:dev
            {:extra-paths ["dev" "test"]
             :extra-deps {lambdaisland/kaocha {:mvn/version "RELEASE"}}
+            :jvm-opts ["-Duser.timezone=UTC"]}
+
+           :run-prod
+           {:exec-fn clojurians-log.system/go
+            :exec-args []
             :jvm-opts ["-Duser.timezone=UTC"]}}}
