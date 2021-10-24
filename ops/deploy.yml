@@ -39,48 +39,48 @@
         force: yes
         update: yes
         depth: 1
-        # key_file: "{{ DEPLOY_KEY_PATH }}"
-      notify:
-        - app daemon reload
-        - app restart
+        key_file: "{{ DEPLOY_KEY_PATH }}"
+      # notify:
+      #   - app daemon reload
+      #   - app restart
 
-    - name: update environment file
-      tags: env
-      template:
-        src: env.conf.j2
-        dest: "{{ env_file }}"
-      notify:
-        - app daemon reload
-        - app restart
+    # - name: update environment file
+    #   tags: env
+    #   template:
+    #     src: env.conf.j2
+    #     dest: "{{ env_file }}"
+    #   notify:
+    #     - app daemon reload
+    #     - app restart
 
-    - name: update app service file
-      tags: env
-      template:
-        src: "{{ app_name }}.service.j2"
-        dest: /etc/systemd/system/{{ app_name }}.service
-      become: yes
-      notify:
-        - app daemon reload
-        - app restart
+    # - name: update app service file
+    #   tags: env
+    #   template:
+    #     src: "{{ app_name }}.service.j2"
+    #     dest: /etc/systemd/system/{{ app_name }}.service
+    #   become: yes
+    #   notify:
+    #     - app daemon reload
+    #     - app restart
 
-    - name: ensure app is running
-      systemd: name={{ app_name }} state=started enabled=yes
-      become: yes
+    # - name: ensure app is running
+    #   systemd: name={{ app_name }} state=started enabled=yes
+    #   become: yes
 
-    - name: npm install
-      tags: code
-      npm:
-        path: "{{ app_dir }}"
+    # - name: npm install
+    #   tags: code
+    #   npm:
+    #     path: "{{ app_dir }}"
 
-    - name: stop app
-      systemd: name={{ app_name }} state=stopped
-      become: yes
+    # - name: stop app
+    #   systemd: name={{ app_name }} state=stopped
+    #   become: yes
 
-    - name: install deps, build css / js production assets pipeline
-      tags: code
-      make:
-        chdir: "{{ app_dir }}"
-        target: "{{ pre_deploy_target }}"
+    # - name: install deps, build css / js production assets pipeline
+    #   tags: code
+    #   make:
+    #     chdir: "{{ app_dir }}"
+    #     target: "{{ pre_deploy_target }}"
 
     # - name: migrate db
     #   tags: code
@@ -88,15 +88,15 @@
     #     chdir: "{{ app_dir }}"
     #     target: "{{ migrate_target }}"
 
-    - name: start app
-      systemd: name={{ app_name }} state=started enabled=yes
-      become: yes
+    # - name: start app
+    #   systemd: name={{ app_name }} state=started enabled=yes
+    #   become: yes
 
-  handlers:
-    - name: app daemon reload
-      systemd: name={{ app_name }} daemon_reload=yes
-      become: yes
+  # handlers:
+    # - name: app daemon reload
+    #   systemd: name={{ app_name }} daemon_reload=yes
+    #   become: yes
 
-    - name: app restart
-      systemd: name={{ app_name }} state=restarted daemon_reload=yes
-      become: yes
+    # - name: app restart
+    #   systemd: name={{ app_name }} state=restarted daemon_reload=yes
+    #   become: yes
