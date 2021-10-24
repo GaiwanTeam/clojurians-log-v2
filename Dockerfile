@@ -8,4 +8,6 @@ RUN clojure -P
 
 COPY . /src
 
+EXPOSE 8000
+
 CMD ["clojure", "-A:dev", "-X:run-prod"]
