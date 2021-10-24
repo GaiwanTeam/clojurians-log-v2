@@ -36,5 +36,5 @@
 
            :run-prod
            {:exec-fn clojurians-log.system/go
-            :exec-args []
+            :exec-args nil
             :jvm-opts ["-Duser.timezone=UTC"]}}}
