@@ -32,8 +32,6 @@
         data (jdbc/execute! ds query)]
     (first data)))
 
-(channel-by-name ds "4clojure")
-
 (defn channel-message-counts-by-date [ds channel-id]
   (let [sqlmap {:select [[[:count :*]]
                          [[:cast :created-at :date]]]
