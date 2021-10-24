@@ -16,6 +16,7 @@
    :clojurians-log.http/css {}
    :clojurians-log.db.core/datasource {:dbtype "postgres"
                                        :user "myuser"
+                                       :port 54321
                                        :password "mypass"
                                        :dbname "clojurians_log"
                                        :serverTimezone "UTC"}})
