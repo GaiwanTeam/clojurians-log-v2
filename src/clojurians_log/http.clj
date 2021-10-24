@@ -1,6 +1,5 @@
 (ns clojurians-log.http
   (:require [ring.adapter.jetty :as jetty]
-            [lambdaisland.ornament.watcher :as o-watcher]
             [lambdaisland.ornament :as o]
             [lambdaisland.hiccup :as hiccup]
             [clojurians-log.routes :as routes]
@@ -79,8 +78,8 @@
 (defmethod ig/halt-key! ::server [_ server]
   (.stop server))
 
-(defmethod ig/init-key ::css [_ config]
-  (o-watcher/start-watcher! config))
+;; (defmethod ig/init-key ::css [_ config]
+;;   (o-watcher/start-watcher! config))
 
-(defmethod ig/halt-key! ::css [_ hawk]
-  (o-watcher/stop-watcher! hawk))
+;; (defmethod ig/halt-key! ::css [_ hawk]
+;;   (o-watcher/stop-watcher! hawk))
