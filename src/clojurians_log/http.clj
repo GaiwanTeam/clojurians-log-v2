@@ -7,6 +7,7 @@
             [muuntaja.core :as m]
             [muuntaja.format.core :as muuntaja-format]
             [reitit.ring.middleware.muuntaja :as muuntaja-middleware]
+            [reitit.ring.middleware.parameters :as parameters]
             [integrant.core :as ig]
             [reitit.ring :as ring])
   (:import (java.io OutputStream)
@@ -63,6 +64,7 @@
     {:conflicts nil
      :data {:muuntaja   (muuntaja-instance)
             :middleware [muuntaja-middleware/format-middleware
+                         parameters/parameters-middleware
                          view-fn-middleware
                          (inject-component-middleware config)]}})
    (ring/routes
