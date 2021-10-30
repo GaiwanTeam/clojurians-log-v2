@@ -14,20 +14,19 @@
 (defn message->tx [{:keys [channel-id user text ts thread-ts] :as message}
                    {:keys [member-slack->db-id] :as cache}]
   (let [member-id (get member-slack->db-id user)
-        parent-ts (if thread-ts
+        parent-id (when (and thread-ts (not= thread-ts ts))
                     {:select [:id]
                      :from [:message]
                      :limit 1
                      :where [:and
                              [:= :ts thread-ts]
-                             [:= :channel-id channel-id]]}
-                    nil)]
+                             [:= :channel-id channel-id]]})]
     {:channel-id channel-id
      :member-id member-id
      :text text
      :ts ts
      :created-at (time-utils/ts->inst ts)
-     :parent parent-ts
+     :parent parent-id
      :deleted-ts nil}))
 
 (defmethod event->tx ["message" nil] [message cache]
