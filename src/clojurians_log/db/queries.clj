@@ -59,9 +59,10 @@
           (map (juxt :slack-id :name))
           data)))
 
-(defn search-query [ds search-query]
-  (let [sqlmap {:select [:*]
+(defn search-messages [ds search-query]
+  (let [sqlmap {:select [:message.* :member.*]
                 :from [:message]
+                :join [:member [:= :message.member-id :member.id]]
                 :where [[:raw ["to_tsvector('english', text) @@ websearch_to_tsquery('english'," [:param :search-query] ")"]]]}
         query (sql/format sqlmap {:params {:search-query search-query}})
         data (jdbc/execute! ds query)]
