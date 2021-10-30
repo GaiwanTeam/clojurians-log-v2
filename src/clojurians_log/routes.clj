@@ -42,8 +42,8 @@
              [layout/base
               [common/channel-date-page data]])}))
 
-(defn search-handler [{:keys [ds path-params]}]
-  (let [query (:query path-params)
+(defn search-handler [{:keys [ds query-params] :as req}]
+  (let [query (get query-params "q")
         messages (queries/search-messages ds query)]
     {:status 200
      :body {:query query
@@ -57,6 +57,6 @@
    ["/about" {:get handler}]
    ["/sitemap" {:get handler}]
    ["/healthcheck" {:get handler}]
-   ["/search/:query" {:get search-handler}]
+   ["/search" {:get search-handler :parameter {:query {:q string?}}}]
    ["/:channel" {:get channel-handler}]
    ["/:channel/:date" {:get channel-date-handler}]])
