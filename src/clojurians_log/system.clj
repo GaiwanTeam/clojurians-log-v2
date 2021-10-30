@@ -5,7 +5,7 @@
             [clojure.edn :as edn]))
 
 (defn secrets []
-  (-> "secrets.edn"
+  (-> "config/secrets.edn"
       io/resource
       slurp
       edn/read-string))

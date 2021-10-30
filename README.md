@@ -121,6 +121,10 @@ this can be done again to reset the database to a clean slate.
 
 For populating the db from a slack archive, check `bulk_import.clj` file.
 
+## Secrets
+
+Secrets are stored in `resources/config/secrets.edn`
+
 ## Contribute
 
 This project is currently undergoing major changes. Before you contribute please
