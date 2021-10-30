@@ -3,6 +3,7 @@
             [clojurians-log.db.import :as import]
             [clojurians-log.utils :as utils]
             [clojurians-log.slack.api :as clj-slack]
+            [clojurians-log.system :as system]
             [honey.sql :as sql]
             [integrant.repl.state :as ig-state]
             [next.jdbc :as jdbc]))
@@ -167,8 +168,26 @@
       {:chan-name->id (chan-cache ds)
        :member-slack->db-id (member-cache ds)})
 
-    (channels ds)
-    (members ds)
-    (messages ds "general" (get-cache)))
+    (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
+
+    (if (io/resource "sample_data/channels.json")
+      (channels ds)
+      (let [slack-channels (clj-slack/get-channels slack-conn)]
+        (channels ds slack-channels)))
+
+    (if (io/resource "sample_data/users.json")
+      (members ds)
+      (let [slack-users (clj-slack/get-users slack-conn)]
+        (for [p-users (partition-all 100 slack-users)]
+          (members ds p-users))))
+
+    (let [slack-users (clj-slack/get-users slack-conn)]
+        (for [p-users (partition-all 5000 slack-users)]
+          (count p-users)))
+
+    (messages ds "announcements" (get-cache))
+    (messages ds "announcements" (get-cache))
+
+    ,)
 
   ,)
