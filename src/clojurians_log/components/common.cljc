@@ -95,22 +95,6 @@
     [:p {:class "text-black leading-normal"}
      (mformat/message->hiccup text member-cache-id-name)]]])
 
-(defn message-with-code []
-  [:div {:class "flex items-start mb-4 text-sm"}
-   [:img
-    {:class "w-10 h-10 rounded mr-3",
-     :src ""}]
-   [:div {:class "flex-1 overflow-hidden"}
-    [:div [:span {:class "font-bold"} "Clojurians log"]
-     [:span {:class "text-grey text-xs"} "12:45"]]
-    [:p {:class "text-black leading-normal"}
-     "How are we supposed to control the marquee space without an utility for it? I propose this:"]
-    [:div
-     {:class
-      "bg-grey-300 border border-grey-light text-grey-900 text-sm font-mono rounded p-3 mt-2 whitespace-pre overflow-scroll"}
-     ".marquee-lightspeed { -webkit-marquee-speed: fast; } .marquee-lightspeeder { -webkit-marquee-speed: faster; }"]]])
-
-
 (defn message-with-tag []
   [:div {:class "flex items-start mb-4 text-sm"}
    [:img
