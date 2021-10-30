@@ -70,10 +70,12 @@
      (mformat/message->text subtitle {})]]
    [:div {:class "ml-auto hidden md:block"}
     [:div {:class "relative"}
-     [:input
-      {:class "appearance-none border border-grey rounded-lg pl-8 pr-4 py-2",
-       :placeholder "Search",
-       :type "search"}]
+     [:form {:action "/search"}
+      [:input
+       {:class "appearance-none border border-grey rounded-lg pl-8 pr-4 py-2"
+        :placeholder "Search"
+        :name "q"
+        :type "search"}]]
      [:div
       {:class "absolute inset-y-0 left-0 pl-3 flex items-center justify-center"}
       [:svg
