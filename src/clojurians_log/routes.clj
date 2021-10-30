@@ -28,11 +28,13 @@
 (defn channel-date-handler [{:keys [ds path-params] :as request}]
   (let [channel (queries/channel-by-name ds (:channel path-params))
         channels (queries/all-channels ds)
+        member-cache-id-name (queries/member-cache-id-name ds)
         messages (queries/messages-by-channel-date ds (:id channel) (:date path-params))
         message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
     {:status 200
      :body {:channels channels
             :channel channel
+            :member-cache-id-name member-cache-id-name
             :messages messages
             :date (:date path-params)
             :message-counts-by-date message-counts-by-date}

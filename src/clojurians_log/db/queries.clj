@@ -51,8 +51,18 @@
         data (jdbc/execute! ds (sql/format sqlmap))]
     data))
 
+(defn member-cache-id-name [ds]
+  (let [sqlmap {:select [:slack-id :name]
+                :from [:member]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    (into {}
+          (map (juxt :slack-id :name))
+          data)))
+
 (comment
   (def ds (:clojurians-log.db.core/datasource ig-state/system))
+
+  (member-cache-id-name ds)
 
   (take 10
         (all-messages ds))
