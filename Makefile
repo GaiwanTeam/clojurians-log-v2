@@ -5,3 +5,11 @@ pgcli:
 
 deploy:
 	cd ops && ansible-playbook deploy.yml -i hosts
+
+init:
+	npm istall
+	mkdir -p resources/config
+	touch resources/config/secrets.edn
+
+dev:
+	npm run dev

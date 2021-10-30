@@ -84,13 +84,11 @@ the way we log currently.
 
 ## Development
 
-First start postgres db:
+* For first time setup, run `make init`
+* To start css watchers, run `make dev`
+* To start postgres db, run `docker-compose up`
 
-``` sh
-docker-compose up
-```
-
-then jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8080
+To jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8080
 
 ``` sh
 $ clj -A:dev
