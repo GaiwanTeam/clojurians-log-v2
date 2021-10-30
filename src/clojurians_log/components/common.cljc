@@ -1,4 +1,5 @@
-(ns clojurians-log.components.common)
+(ns clojurians-log.components.common
+  (:require [clojurians-log.message.format :as mformat]))
 
 (defn sidebar []
   [:div
@@ -66,7 +67,7 @@
    [:div {:class "flex flex-col"}
     [:h3 {:class "text-grey-900 mb-1 font-extrabold"} title]
     [:div {:class "text-grey-dark text-sm truncate"}
-     subtitle]]
+     (mformat/message->text subtitle {})]]
    [:div {:class "ml-auto hidden md:block"}
     [:div {:class "relative"}
      [:input
