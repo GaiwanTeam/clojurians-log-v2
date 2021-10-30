@@ -110,7 +110,8 @@
      " the size of the generated CSS is creating a singularity in space/time, we must stop adding more utilities before it's too late!"]]])
 
 (defn slack-layout [{:keys [channels title subtitle]
-                     :or {title "Archives"
+                     :or {channels []
+                          title "Archives"
                           subtitle "Made with <3 by @oxalorg"}} & body]
   [:div {:class "font-sans antialiased h-screen flex"}
    (channel-list channels)
@@ -122,6 +123,13 @@
 (defn home-page [{:keys [channels]}]
   [slack-layout {:channels channels}
    [:h2 "Welcome!"]])
+
+(defn search-page [{:keys [query messages]}]
+  [slack-layout {:title (str "Search results for \"" query "\"")
+                 :subtitle (str "in entire clojurians slack archive")}
+   [:p "Found " (count messages) " results" ]
+   (for [msg messages]
+     [message msg {}])])
 
 (defn channel-page [{:keys [channels channel message-counts-by-date]}]
   [slack-layout
