@@ -12,97 +12,95 @@
 
 (defn channels
   "Imports channels idempotently based on the slack_id"
-  ([ds]
-   (channels
-    ds
-    (utils/read-json-from-file "sample_data/channels.json")))
-  ([ds slack-data]
-   (let [data (into []
-                    (comp
-                     (map #(utils/select-keys-nested-as
-                            % [{:keys :id
-                                :rename :slack-id}
-                               :name
-                               {:keys [:topic :value]
-                                :rename :topic}
-                               {:keys [:purpose :value]
-                                :rename :purpose}])))
-                    slack-data)
-         sqlmap {:insert-into [:channel]
-                 :values data
-                 :on-conflict :slack-id
-                 :do-update-set {:fields [:name :topic :purpose]}}]
-     (jdbc/execute! ds (sql/format sqlmap)))))
+  [ds path-or-data]
+  (cond
+    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path "channels.json")))
+    (map? path-or-data)
+    (let [data (into []
+                     (comp
+                      (map #(utils/select-keys-nested-as
+                             % [{:keys :id
+                                 :rename :slack-id}
+                                :name
+                                {:keys [:topic :value]
+                                 :rename :topic}
+                                {:keys [:purpose :value]
+                                 :rename :purpose}])))
+                     slack-data)
+          sqlmap {:insert-into [:channel]
+                  :values data
+                  :on-conflict :slack-id
+                  :do-update-set {:fields [:name :topic :purpose]}}]
+      (jdbc/execute! ds (sql/format sqlmap)))))
 
 (defn members
   "Imports members idempotently based on the (slack) id"
-  ([ds]
-   (members
-    ds
-    (utils/read-json-from-file "sample_data/users.json")))
-  ([ds slack-data]
-   (let [data (into []
-                    (comp
-                     (map #(utils/select-keys-nested-as
-                            % [:name
-                               {:keys [:id]
-                                :rename :slack-id}
-                               :team-id
-                               [:profile :real-name]
-                               [:profile :real-name-normalized]
-                               [:profile :display-name]
-                               [:profile :display-name-normalized]
-                               [:profile :first-name]
-                               [:profile :last-name]
-                               [:profile :title]
-                               [:profile :skype]
-                               [:profile :phone]
-                               ;;[:profile :image-original]
-                               [:profile :image-24]
-                               [:profile :image-32]
-                               [:profile :image-48]
-                               [:profile :image-72]
-                               [:profile :image-192]
-                               [:profile :image-512]
-                               :is-admin
-                               :is-bot
-                               :tz
-                               :tz-offset
-                               :tz-label
-                               :deleted
-                               :bot-id
-                               :is-email-confirmed])))
-                    slack-data)
-         sqlmap {:insert-into [:member]
-                 :values data
-                 :on-conflict :slack-id
-                 :do-update-set {:fields [:name
-                                          :team-id
-                                          :real-name
-                                          :real-name-normalized
-                                          :display-name
-                                          :display-name-normalized
-                                          :first-name
-                                          :last-name
-                                          :title
-                                          :skype
-                                          :phone
-                                          :is-admin
-                                          :image-24
-                                          :image-32
-                                          :image-48
-                                          :image-72
-                                          :image-192
-                                          :image-512
-                                          :is-bot
-                                          :tz
-                                          :tz-offset
-                                          :tz-label
-                                          :deleted
-                                          :bot-id
-                                          :is-email-confirmed]}}
-         sqlquery (sql/format sqlmap)]
-     (jdbc/execute! ds sqlquery))))
+  [ds path-or-data]
+  (cond
+    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path "users.json")))
+    (map? path-or-data)
+    (let [data (into []
+                     (comp
+                      (map #(utils/select-keys-nested-as
+                             % [:name
+                                {:keys [:id]
+                                 :rename :slack-id}
+                                :team-id
+                                [:profile :real-name]
+                                [:profile :real-name-normalized]
+                                [:profile :display-name]
+                                [:profile :display-name-normalized]
+                                [:profile :first-name]
+                                [:profile :last-name]
+                                [:profile :title]
+                                [:profile :skype]
+                                [:profile :phone]
+                                ;;[:profile :image-original]
+                                [:profile :image-24]
+                                [:profile :image-32]
+                                [:profile :image-48]
+                                [:profile :image-72]
+                                [:profile :image-192]
+                                [:profile :image-512]
+                                :is-admin
+                                :is-bot
+                                :tz
+                                :tz-offset
+                                :tz-label
+                                :deleted
+                                :bot-id
+                                :is-email-confirmed])))
+                     slack-data)
+          sqlmap {:insert-into [:member]
+                  :values data
+                  :on-conflict :slack-id
+                  :do-update-set {:fields [:name
+                                           :team-id
+                                           :real-name
+                                           :real-name-normalized
+                                           :display-name
+                                           :display-name-normalized
+                                           :first-name
+                                           :last-name
+                                           :title
+                                           :skype
+                                           :phone
+                                           :is-admin
+                                           :image-24
+                                           :image-32
+                                           :image-48
+                                           :image-72
+                                           :image-192
+                                           :image-512
+                                           :is-bot
+                                           :tz
+                                           :tz-offset
+                                           :tz-label
+                                           :deleted
+                                           :bot-id
+                                           :is-email-confirmed]}}
+          sqlquery (sql/format sqlmap)]
+      (jdbc/execute! ds sqlquery))))
 
 (defn messages
   "Imports messages idempotently based on the slack_id"
