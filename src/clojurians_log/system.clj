@@ -12,7 +12,7 @@
 
 (defn get-config [profile*]
   (let [profile (fn [{:keys [default dev]}]
-                  (condp = profile
+                  (condp = profile*
                     :dev dev
                     default))
         secret (fn [& in-keys]
