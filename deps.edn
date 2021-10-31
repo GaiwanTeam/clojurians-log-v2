@@ -37,4 +37,5 @@
            :run-prod
            {:exec-fn clojurians-log.system/go
             :exec-args {:profile :prod}
-            :jvm-opts ["-Duser.timezone=UTC"]}}}
+            :jvm-opts ["-Duser.timezone=UTC"
+                       "-Dclojure.server.repl={:port 50505 :accept clojure.core.server/repl}"]}}}
