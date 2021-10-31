@@ -1,5 +1,6 @@
 (ns clojurians-log.db.import
   (:require [honey.sql :as sql]
+            [clojure.string :as string]
             [clojurians-log.time-utils :as time-utils]))
 
 (defmulti event->tx
@@ -23,7 +24,7 @@
                              [:= :channel-id channel-id]]})]
     {:channel-id channel-id
      :member-id member-id
-     :text text
+     :text (string/replace text #"\u0000" "")
      :ts ts
      :created-at (time-utils/ts->inst ts)
      :parent parent-id
