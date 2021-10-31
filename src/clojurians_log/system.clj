@@ -10,17 +10,25 @@
       slurp
       edn/read-string))
 
-(defn get-config []
-  {:clojurians-log.http/server {:port 8000
-                                :ds (ig/ref :clojurians-log.db.core/datasource)}
-   #_#_:clojurians-log.http/css {}
-   :clojurians-log.db.core/datasource {:dbtype "postgres"
-                                       :user "myuser"
-                                       :port 54321
-                                       :password "mypass"
-                                       :dbname "clojurians_log"
-                                       :serverTimezone "UTC"}})
+(defn get-config [profile*]
+  (let [profile (fn [{:keys [default dev]}]
+                  (condp = profile
+                    :dev dev
+                    default))
+        secret (fn [& in-keys]
+                 (get-in (secrets) in-keys))]
+    {:clojurians-log.http/server
+     {:port 8000
+      :ds (ig/ref :clojurians-log.db.core/datasource)}
+     :clojurians-log.db.core/datasource
+     {:dbtype "postgres"
+      :user (profile {:default (secret :db :user) :dev "myuser"})
+      :port (profile {:default 5432 :dev 54321})
+      :password (profile {:default (secret :db :password) :dev "mypass"})
+      :dbname "clojurians_log"
+      :serverTimezone "UTC"}}))
 
-(ig-repl/set-prep! #(doto (get-config) ig/load-namespaces))
-
-(def go ig-repl/go)
+(defn go [& [{:keys [profile]
+              :or {profile :default}}]]
+  (ig-repl/set-prep! #(doto (get-config profile) ig/load-namespaces))
+  (ig-repl/go))
