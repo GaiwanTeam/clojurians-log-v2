@@ -37,13 +37,13 @@
    [:div {:class "text-white mb-2 mt-3 px-4 flex justify-between"}
     [:div {:class "flex-auto"}
      [:h1 {:class "font-semibold text-xl leading-tight mb-1 truncate"}
-      "Clojurians Log"]
+      [:a {:href "/" :class "text-white"} "Clojurians Log v2"]]
      [:div {:class "flex items-center mb-6"}
       [:svg
        {:class "h-2 w-2 fill-current text-green mr-2", :viewbox "0 0 20 20"}
        [:circle {:cx "10", :cy "10", :r "10"}]]
-      [:span {:class "text-white opacity-50 text-sm"} "Clojurians Log"]]]
-    [:div
+      [:span {:class "text-white opacity-50 text-sm"} "Clojure programming"]]]
+    #_[:div
      [:svg
       {:class "h-6 w-6 fill-current text-white opacity-25",
        :viewbox "0 0 20 20"}
@@ -124,7 +124,25 @@
 
 (defn home-page [{:keys [channels]}]
   [slack-layout {:channels channels}
-   [:h2 "Welcome!"]])
+   [:h2 {:class "mb-4 text-xl font-bold"} "👋 Welcome clojurians!"]
+
+   [:div {:class "flex flex-col space-y-4"}
+    [:p "We store these messages for posterity, so that the vast amounts of
+    knowledge that are shared there are not lost, but instead are accessible to
+    all, including search engines."]
+
+    [:p "The wealth of knowledge being shared on the clojurians slack server is
+    immense.  Capturing, conserving, and making this discourse complete, easily
+    accessible, and searchable should greatly benefit the community as a
+    whole."]
+
+    [:p "This project has received funding for 3 months by Clojurists Together.
+    Thanks to the amazing Clojurists Together team and the awesome folks of the
+    clojure community for their support 🥳 🌸"]
+
+    [:p "Find the source code, create issues, or contribute at "
+     [:a {:href "https://github.com/oxalorg/clojurians-log-v2"}
+      "github.com/oxalorg/clojurians-log-v2"]]]])
 
 (defn search-page [{:keys [query messages]}]
   [slack-layout {:title (str "Search results for \"" query "\"")
