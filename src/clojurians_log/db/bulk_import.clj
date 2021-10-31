@@ -16,7 +16,7 @@
   [ds path-or-data]
   (cond
     (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
-    (map? path-or-data)
+    (seq path-or-data)
     (let [slack-data path-or-data
           data (into []
                      (comp
@@ -40,7 +40,7 @@
   [ds path-or-data]
   (cond
     (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "users.json")))
-    (map? path-or-data)
+    (seq path-or-data)
     (let [slack-data path-or-data
           data (into []
                      (comp
@@ -172,7 +172,7 @@
                             (let [slack-channels (clj-slack/get-channels slack-conn)]
                               (channels ds slack-channels)))
         imported-members-list (if (.exists members-file)
-                                (channels ds members-file)
+                                (members ds members-file)
                                 (let [slack-users (clj-slack/get-users slack-conn)]
                                   (for [p-users (partition-all 100 slack-users)]
                                     (members ds p-users))))
@@ -199,7 +199,7 @@
 
     (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
 
-    (channel-member-import nil)
+    (channel-member-import)
 
     (def path "../clojurians-log-data/sample_data")
 
