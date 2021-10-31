@@ -11,10 +11,10 @@
       edn/read-string))
 
 (defn get-config [profile*]
-  (let [profile (fn [{:keys [default dev]}]
+  (let [profile (fn [{:keys [prod dev]}]
                   (condp = profile*
                     :dev dev
-                    default))
+                    prod))
         secret (fn [& in-keys]
                  (get-in (secrets) in-keys))]
     {:clojurians-log.http/server
@@ -22,13 +22,14 @@
       :ds (ig/ref :clojurians-log.db.core/datasource)}
      :clojurians-log.db.core/datasource
      {:dbtype "postgres"
-      :user (profile {:default (secret :db :user) :dev "myuser"})
-      :port (profile {:default 5432 :dev 54321})
-      :password (profile {:default (secret :db :password) :dev "mypass"})
+      :user (profile {:prod (secret :db :user) :dev "myuser"})
+      :port (profile {:prod 5432 :dev 54321})
+      :password (profile {:prod (secret :db :password) :dev "mypass"})
       :dbname "clojurians_log"
       :serverTimezone "UTC"}}))
 
 (defn go [& [{:keys [profile]
-              :or {profile :default}}]]
+              :or {profile :dev}}]]
+  (println "Launching with profile " profile)
   (ig-repl/set-prep! #(doto (get-config profile) ig/load-namespaces))
   (ig-repl/go))
