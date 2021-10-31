@@ -18,7 +18,7 @@
         secret (fn [& in-keys]
                  (get-in (secrets) in-keys))]
     {:clojurians-log.http/server
-     {:port 8000
+     {:port (profile {:prod 8919 :dev 8000})
       :ds (ig/ref :clojurians-log.db.core/datasource)}
      :clojurians-log.db.core/datasource
      {:dbtype "postgres"

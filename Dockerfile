@@ -19,6 +19,6 @@ COPY . /src
 
 RUN npm run release
 
-EXPOSE 8000
+EXPOSE 8919
 
 CMD ["clojure", "-X:run-prod"]
