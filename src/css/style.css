@@ -9,3 +9,11 @@ pre {
     @apply bg-gray-200 border border-gray-100 text-gray-900;
     @apply text-sm font-mono rounded p-3 mt-2 whitespace-pre overflow-scroll;
 }
+
+code {
+    @apply bg-gray-200;
+}
+
+a {
+    @apply text-blue-500;
+}
