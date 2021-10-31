@@ -3,6 +3,10 @@
             [integrant.repl.state :as ig-state]
             [honey.sql :as sql]))
 
+(def repl-ds
+  "only for repl usage, don't use this directly"
+  (:clojurians-log.db.core/datasource ig-state/system))
+
 (defn all-messages [ds]
   (let [sqlmap {:select [:message.* :member.*]
                 :from [:message]
@@ -36,10 +40,11 @@
   (let [sqlmap {:select [[[:count :*]]
                          [[:cast :created-at :date]]]
                 :from [:message]
-                :limit 100
+                :limit 300
                 :where [:and
                         [:= :channel-id channel-id]
                         [:<> :created-at nil]]
+                :order-by [[:created-at :desc]]
                 :group-by [[:cast :created-at :date]]}
         data (jdbc/execute! ds (sql/format sqlmap))]
     data))
