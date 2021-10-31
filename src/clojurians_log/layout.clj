@@ -8,6 +8,9 @@
     [:title "Clojurians log v2"]
     [:meta {:charset "UTF-8"}]
     [:meta {:content "width=device-width, initial-scale=1" :name "viewport"}]
+    [:script {:data-goatcounter "https://clojurians-log-v2.goatcounter.com/count"
+              :async true
+              :src "//gc.zgo.at/count.js"}]
     (when (io/resource "public/css/compiled/style.css")
       [:link {:rel "stylesheet" :href "/css/compiled/style.css"}])
     (if (io/resource "public/css/compiled/ornament.css")
