@@ -5,10 +5,9 @@
             [lambdaisland.ornament :as o]))
 
 (defn handler [{:keys [ds] :as request}]
-  (let [msgs (queries/all-messages ds)]
+  (let [channels (queries/all-channels ds)]
     {:status 200
-     :body {:channels (queries/all-channels ds)
-            :messages msgs}
+     :body {:channels channels}
      :view (fn [data]
              [layout/base
               [common/home-page data]])}))
