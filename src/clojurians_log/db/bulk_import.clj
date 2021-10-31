@@ -181,8 +181,12 @@
     (println stats)
     stats))
 
+(defn- get-cache []
+  {:chan-name->id (chan-cache ds)
+   :member-slack->db-id (member-cache ds)})
+
 (defn messages-all [path]
-  (for [chan (take 10 (queries/all-channels queries/repl-ds))]
+  (for [chan (queries/all-channels queries/repl-ds)]
     (messages ds path (:name chan) (get-cache))))
 
 (comment
@@ -192,10 +196,6 @@
     (defn exec [sqlmap]
       (println (sql/format sqlmap))
       (jdbc/execute! ds (sql/format sqlmap)))
-
-    (defn get-cache []
-      {:chan-name->id (chan-cache ds)
-       :member-slack->db-id (member-cache ds)})
 
     (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
 
