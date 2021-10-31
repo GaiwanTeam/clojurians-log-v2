@@ -6,7 +6,8 @@
             [clojurians-log.system :as system]
             [honey.sql :as sql]
             [integrant.repl.state :as ig-state]
-            [next.jdbc :as jdbc]))
+            [next.jdbc :as jdbc]
+            [clojurians-log.db.queries :as queries]))
 
 (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
@@ -14,9 +15,10 @@
   "Imports channels idempotently based on the slack_id"
   [ds path-or-data]
   (cond
-    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path "channels.json")))
+    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
     (map? path-or-data)
-    (let [data (into []
+    (let [slack-data path-or-data
+          data (into []
                      (comp
                       (map #(utils/select-keys-nested-as
                              % [{:keys :id
@@ -37,9 +39,10 @@
   "Imports members idempotently based on the (slack) id"
   [ds path-or-data]
   (cond
-    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path "users.json")))
+    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "users.json")))
     (map? path-or-data)
-    (let [data (into []
+    (let [slack-data path-or-data
+          data (into []
                      (comp
                       (map #(utils/select-keys-nested-as
                              % [:name
@@ -104,13 +107,13 @@
 
 (defn messages
   "Imports messages idempotently based on the slack_id"
-  [ds channel cache]
-  (let [channel-dir (io/file (str "src/sample_data/" channel))
-        msg-files (sort (file-seq channel-dir))]
-    (println "Importing from channel:" channel)
+  [ds path channel cache]
+  (let [channel-dir (io/file path channel)
+        msg-files (sort (file-seq channel-dir))
+        file-count (atom 0)]
     (doseq [msg-file msg-files]
       (when (.isFile msg-file)
-        (println "Importing from file:" (.getAbsolutePath msg-file))
+        (swap! file-count inc)
         (let [data (utils/read-json-from-file msg-file)
               data (into []
                          (comp
@@ -136,7 +139,9 @@
                       }
               ]
           (when (seq sqlvals)
-            (jdbc/execute! ds (sql/format sqlmap))))))))
+            (jdbc/execute! ds (sql/format sqlmap))))))
+    (println (format "%-10s -> %4d files imported." channel @file-count))))
+
 
 (defn chan-cache [ds]
   (let [sqlmap {:select [:id :name]
@@ -176,6 +181,10 @@
     (println stats)
     stats))
 
+(defn messages-all [path]
+  (for [chan (take 10 (queries/all-channels queries/repl-ds))]
+    (messages ds path (:name chan) (get-cache))))
+
 (comment
   (do
     ;; eval buffer then eval this do form to populate db
@@ -192,9 +201,11 @@
 
     (channel-member-import nil)
 
-    (messages ds "announcements" (get-cache))
-    (messages ds "announcements" (get-cache))
+    (def path "../clojurians-log-data/sample_data")
+
+    (messages ds path "cider" (get-cache))
+
+    (messages-all path)
 
     ,)
-
   ,)

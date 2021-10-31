@@ -33,7 +33,6 @@
    (fn [token]
      (if (and (vector? token) (= :user-id (first token)))
        (let [user-id (second token)]
-         (println "USER ID NAME: " token (get id-names user-id user-id))
          [:user {:user-id user-id :user-name (get id-names user-id user-id)}])
        token))
    message))
