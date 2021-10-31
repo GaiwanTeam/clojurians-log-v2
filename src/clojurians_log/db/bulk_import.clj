@@ -167,6 +167,7 @@
   (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
         chan-file (io/file path "channels.json")
         members-file (io/file path "users.json")
+        ds (queries/repl-ds)
         imported-channels (if (.exists chan-file)
                             (channels ds chan-file)
                             (let [slack-channels (clj-slack/get-channels slack-conn)]
@@ -186,7 +187,7 @@
    :member-slack->db-id (member-cache ds)})
 
 (defn messages-all [path]
-  (for [chan (queries/all-channels queries/repl-ds)]
+  (for [chan (queries/all-channels (queries/repl-ds))]
     (messages ds path (:name chan) (get-cache))))
 
 (comment

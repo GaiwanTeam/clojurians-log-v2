@@ -3,8 +3,9 @@
             [integrant.repl.state :as ig-state]
             [honey.sql :as sql]))
 
-(def repl-ds
+(defn repl-ds
   "only for repl usage, don't use this directly"
+  []
   (:clojurians-log.db.core/datasource ig-state/system))
 
 (defn all-messages [ds]
