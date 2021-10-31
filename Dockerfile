@@ -1,7 +1,7 @@
 FROM clojure:openjdk-11-tools-deps-slim-bullseye
 
 RUN apt-get update -yq \
-    && apt-get install curl gnupg -yq \
+    && apt-get install curl gnupg netcat -yq \
     && curl -sL https://deb.nodesource.com/setup_14.x | bash \
     && apt-get install nodejs -yq
 
