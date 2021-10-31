@@ -157,7 +157,8 @@
 (defn channel-member-import
   "Import channel data and member data from path of slack data directory.
   If path is nil, imports from the slack api."
-  [path]
+  [& [{:keys [path]
+       :or {path nil}}]]
   (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
         chan-file (io/file path "channels.json")
         members-file (io/file path "users.json")
@@ -169,9 +170,11 @@
                                 (channels ds members-file)
                                 (let [slack-users (clj-slack/get-users slack-conn)]
                                   (for [p-users (partition-all 100 slack-users)]
-                                    (members ds p-users))))]
-    {:imported-channels-count (-> imported-channels first :next.jdbc/update-count)
-     :imported-members-count (apply + (map #(-> % first :next.jdbc/update-count) imported-members-list))}))
+                                    (members ds p-users))))
+        stats {:imported-channels-count (-> imported-channels first :next.jdbc/update-count)
+               :imported-members-count (apply + (map #(-> % first :next.jdbc/update-count) imported-members-list))}]
+    (println stats)
+    stats))
 
 (comment
   (do
