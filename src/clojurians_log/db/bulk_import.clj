@@ -154,6 +154,25 @@
           (map (juxt :slack-id :id))
           data)))
 
+(defn channel-member-import
+  "Import channel data and member data from path of slack data directory.
+  If path is nil, imports from the slack api."
+  [path]
+  (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
+        chan-file (io/file path "channels.json")
+        members-file (io/file path "users.json")
+        imported-channels (if (.exists chan-file)
+                            (channels ds chan-file)
+                            (let [slack-channels (clj-slack/get-channels slack-conn)]
+                              (channels ds slack-channels)))
+        imported-members-list (if (.exists members-file)
+                                (channels ds members-file)
+                                (let [slack-users (clj-slack/get-users slack-conn)]
+                                  (for [p-users (partition-all 100 slack-users)]
+                                    (members ds p-users))))]
+    {:imported-channels-count (-> imported-channels first :next.jdbc/update-count)
+     :imported-members-count (apply + (map #(-> % first :next.jdbc/update-count) imported-members-list))}))
+
 (comment
   (do
     ;; eval buffer then eval this do form to populate db
@@ -168,20 +187,7 @@
 
     (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
 
-    (if (io/resource "sample_data/channels.json")
-      (channels ds)
-      (let [slack-channels (clj-slack/get-channels slack-conn)]
-        (channels ds slack-channels)))
-
-    (if (io/resource "sample_data/users.json")
-      (members ds)
-      (let [slack-users (clj-slack/get-users slack-conn)]
-        (for [p-users (partition-all 100 slack-users)]
-          (members ds p-users))))
-
-    (let [slack-users (clj-slack/get-users slack-conn)]
-        (for [p-users (partition-all 5000 slack-users)]
-          (count p-users)))
+    (channel-member-import nil)
 
     (messages ds "announcements" (get-cache))
     (messages ds "announcements" (get-cache))
