@@ -141,17 +141,26 @@
 
      [:li "Find the source code, create issues, or contribute at "
       [:a {:href "https://github.com/oxalorg/clojurians-log-v2"}
-       "github.com/oxalorg/clojurians-log-v2"]]
-     ]
+       "github.com/oxalorg/clojurians-log-v2"]]]
 
     [:p "This project has received funding for 3 months by Clojurists Together.
     Thanks to the amazing Clojurists Together team and the awesome folks of the
     clojure community for their support 🥳 🌸"]
 
-    [:p {:class "text-sm"} "Made with 💜 by "
-     [:a {:href "https://twitter.com/oxalorg"} "@oxalorg"]]
+    [:h4 "Searching the entire archive"]
 
-    ]])
+    [:p "Use the top right box to search over ~2 million messages from the logs!
+    The search queries supports some special syntax like: "]
+
+    [:ul
+     [:li "Search for `clojure` for a simple search"]
+     [:li "Search for `clojure spaghetti` for messages containing both clojure and spaghetti (PS: you won't get back any results 😉)"]
+     [:li "Search for `plant OR soil` for messages containing either plant or soil"]
+     [:li "Search for `macro -magic` for finding a macro which isn't magical"]
+     [:li "Search for `\"macro magic\"` for finding the most magical macros"]]
+
+    [:p {:class "text-sm"} "Made with 💜 by "
+     [:a {:href "https://twitter.com/oxalorg"} "@oxalorg"]]]])
 
 (defn search-page [{:keys [query messages]}]
   [slack-layout {:title (str "Search results for \"" query "\"")
