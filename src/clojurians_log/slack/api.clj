@@ -25,6 +25,7 @@
 
 (def get-emoji (collection-endpoint :emoji "emoji.list"))
 (def get-users (collection-endpoint :members "users.list"))
+(def get-users-conversations (collection-endpoint :channels "users.conversations"))
 (def get-channels (collection-endpoint :channels "conversations.list"))
 (def get-history (collection-endpoint :messages "conversations.history"))
 (def get-pins (collection-endpoint :items "pins.list"))

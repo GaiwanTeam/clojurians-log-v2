@@ -159,6 +159,11 @@
           (map (juxt :slack-id :id))
           data)))
 
+(defn log-bot-channels []
+  (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
+        bot-chans (clj-slack/get-users-conversations slack-conn {:user "U055W814A"})]
+    (mapv :name bot-chans)))
+
 (defn channel-member-import
   "Import channel data and member data from path of slack data directory.
   If path is nil, imports from the slack api."
