@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.3.2",
+    "@tailwindcss/typography": "^0.4.1",
     "cross-env": "^7.0.3"
   }
 }
