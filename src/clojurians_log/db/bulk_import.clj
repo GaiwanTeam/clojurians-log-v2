@@ -173,17 +173,24 @@
         chan-file (io/file path "channels.json")
         members-file (io/file path "users.json")
         ds (queries/repl-ds)
-        imported-channels (if (.exists chan-file)
-                            (channels ds chan-file)
-                            (let [slack-channels (clj-slack/get-channels slack-conn)]
-                              (channels ds slack-channels)))
-        imported-members-list (if (.exists members-file)
-                                (members ds members-file)
-                                (let [slack-users (clj-slack/get-users slack-conn)]
-                                  (for [p-users (partition-all 100 slack-users)]
-                                    (members ds p-users))))
-        stats {:imported-channels-count (-> imported-channels first :next.jdbc/update-count)
-               :imported-members-count (apply + (map #(-> % first :next.jdbc/update-count) imported-members-list))}]
+        imported-channels
+        (if (.exists chan-file)
+          ;; TODO: filter allowed channels for file import too
+          (channels ds chan-file)
+          (let [slack-channels (clj-slack/get-channels slack-conn)
+                allowed-chans (set (log-bot-channels))
+                slack-channels-to-log (filter #(contains? allowed-chans (:name %)) slack-channels)]
+            (channels ds slack-channels-to-log)))
+        imported-members-list
+        (if (.exists members-file)
+          (members ds members-file)
+          (let [slack-users (clj-slack/get-users slack-conn)]
+            (for [p-users (partition-all 100 slack-users)]
+              (members ds p-users))))
+        stats {:imported-channels-count
+               (-> imported-channels first :next.jdbc/update-count)
+               :imported-members-count
+               (apply + (map #(-> % first :next.jdbc/update-count) imported-members-list))}]
     (println stats)
     stats))
 
