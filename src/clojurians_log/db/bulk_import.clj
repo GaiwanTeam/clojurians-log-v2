@@ -108,7 +108,8 @@
 (defn messages
   "Imports messages idempotently based on the slack_id"
   [ds path channel cache]
-  (let [channel-dir (io/file path channel)
+  (let [start# (. System (nanoTime))
+        channel-dir (io/file path channel)
         msg-files (sort (file-seq channel-dir))
         file-count (atom 0)]
     (doseq [msg-file msg-files]
@@ -140,7 +141,10 @@
               ]
           (when (seq sqlvals)
             (jdbc/execute! ds (sql/format sqlmap))))))
-    (println (format "%-10s -> %4d files imported." channel @file-count))))
+    (println (format "%4d files [%10.2f s] <- %s"
+                     @file-count
+                     (/ (double (- (. System (nanoTime)) start#)) 1000000000.0)
+                     channel))))
 
 
 (defn chan-cache [ds]
@@ -216,7 +220,7 @@
 
     (def path "../clojurians-log-data/sample_data")
 
-    (messages ds path "cider" (get-cache))
+    (messages ds path "4clojure" (get-cache))
 
     (messages-all path)
 
