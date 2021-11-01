@@ -147,7 +147,7 @@
 (defn search-page [{:keys [query messages]}]
   [slack-layout {:title (str "Search results for \"" query "\"")
                  :subtitle (str "in entire clojurians slack archive")}
-   [:p "Found " (count messages) " results" ]
+   [:p "Found " (-> messages first :full-count) " results" ]
    (for [msg messages]
      [message msg {}])])
 
