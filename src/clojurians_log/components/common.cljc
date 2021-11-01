@@ -114,7 +114,7 @@
 (defn slack-layout [{:keys [channels title subtitle]
                      :or {channels []
                           title "Archives"
-                          subtitle "Made with <3 by @oxalorg"}} & body]
+                          subtitle "🦄 Try out the search feature -->"}} & body]
   [:div {:class "font-sans antialiased h-screen flex"}
    (channel-list channels)
    [:div {:class "flex-1 flex flex-col bg-white overflow-hidden"}
@@ -126,23 +126,32 @@
   [slack-layout {:channels channels}
    [:h2 {:class "mb-4 text-xl font-bold"} "👋 Welcome clojurians!"]
 
-   [:div {:class "flex flex-col space-y-4"}
-    [:p "We store these messages for posterity, so that the vast amounts of
-    knowledge that are shared there are not lost, but instead are accessible to
-    all, including search engines."]
+   [:div {:class "prose lg:prose-lg"}
+    [:p "This is Clojurians Log v2 which is an archive of the clojurians slack."]
 
     [:p "The wealth of knowledge being shared on the clojurians slack server is
     immense.  Capturing, conserving, and making this discourse complete, easily
     accessible, and searchable should greatly benefit the community as a
     whole."]
 
+    [:ul
+     [:li "Read about the Clojurists Together funding action plan: "
+      [:a {:href "https://oxal.org/blog/clojurians-log-v2-funding/"}
+       "oxal.org/blog/clojurians-log-v2-funding/"]]
+
+     [:li "Find the source code, create issues, or contribute at "
+      [:a {:href "https://github.com/oxalorg/clojurians-log-v2"}
+       "github.com/oxalorg/clojurians-log-v2"]]
+     ]
+
     [:p "This project has received funding for 3 months by Clojurists Together.
     Thanks to the amazing Clojurists Together team and the awesome folks of the
     clojure community for their support 🥳 🌸"]
 
-    [:p "Find the source code, create issues, or contribute at "
-     [:a {:href "https://github.com/oxalorg/clojurians-log-v2"}
-      "github.com/oxalorg/clojurians-log-v2"]]]])
+    [:p {:class "text-sm"} "Made with 💜 by "
+     [:a {:href "https://twitter.com/oxalorg"} "@oxalorg"]]
+
+    ]])
 
 (defn search-page [{:keys [query messages]}]
   [slack-layout {:title (str "Search results for \"" query "\"")
