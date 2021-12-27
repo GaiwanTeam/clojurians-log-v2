@@ -7,7 +7,7 @@ deploy:
 	cd ops && ansible-playbook deploy.yml -i hosts
 
 init:
-	npm istall
+	npm install
 	mkdir -p resources/config
 	touch resources/config/secrets.edn
 
