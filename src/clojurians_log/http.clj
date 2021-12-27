@@ -69,7 +69,7 @@
                          (inject-component-middleware config)]}})
    (ring/routes
     (ring/redirect-trailing-slash-handler {:method :add})
-    (ring/create-resource-handler {:path "/" :root "public"})
+    (ring/create-resource-handler {:path "/assets" :root "public"})
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Page not found."})}))))
 

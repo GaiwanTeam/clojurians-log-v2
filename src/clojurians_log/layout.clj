@@ -12,11 +12,11 @@
               :async true
               :src "//gc.zgo.at/count.js"}]
     (when (io/resource "public/css/compiled/style.css")
-      [:link {:rel "stylesheet" :href "/css/compiled/style.css"}])
+      [:link {:rel "stylesheet" :href "/assets/css/compiled/style.css"}])
     (if (io/resource "public/css/compiled/ornament.css")
-      [:link {:rel "stylesheet" :href "/css/compiled/ornament.css"}]
+      [:link {:rel "stylesheet" :href "/assets/css/compiled/ornament.css"}]
       [:style {:type "text/css" :id "ornament"} (o/defined-styles)])]
    [:body
     [:div#app
      body]
-    #_[:script {:type "application/javascript" :src (str "/ui/" (get-script-name :main))}]]])
+    [:script {:type "application/javascript" :src (str "/assets/js/main.js")}]]])
