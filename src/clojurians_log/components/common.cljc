@@ -85,10 +85,12 @@
 (defn top-bar [title subtitle]
   [:div {:class "border-b flex px-6 py-2 items-center flex-none"}
    [:div {:class "flex flex-row justify-between w-full items-center"}
-    [:div
+    [:div {:class "overflow-hidden w-full"}
      [:h3 {:class "text-grey-900 mb-1 font-extrabold"} title]
-     [:div {:class "text-grey-dark text-sm truncate"}
-      (mformat/message->text subtitle {})]]
+     (let [text (mformat/message->text subtitle {})]
+       [:div {:class "text-grey-dark text-sm truncate"
+              :title text}
+        text])]
     [:button {:class "md:hidden p-4 focus:outline-none focus:bg-gray-700"
               :id "mobile-menu-btn"}
      [:div {:class "w-6 h-6"}
