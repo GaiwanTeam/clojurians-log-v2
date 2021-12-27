@@ -2,6 +2,7 @@
   (:require [clojurians-log.layout :as layout]
             [clojurians-log.components.common :as common]
             [clojurians-log.db.queries :as queries]
+            [clojurians-log.open-graph :as og]
             [lambdaisland.ornament :as o]))
 
 (defn handler [{:keys [ds] :as request}]
@@ -10,6 +11,7 @@
      :body {:channels channels}
      :view (fn [data]
              [layout/base
+              (og/social-tags {})
               [common/home-page data]])}))
 
 (defn channel-handler [{:keys [ds path-params] :as request}]
@@ -22,6 +24,7 @@
             :message-counts-by-date message-counts-by-date}
      :view (fn [data]
              [layout/base
+              (og/social-tags {:title (str (-> data :channel :name) " | Clojure Slack Archive")})
               [common/channel-page data]])}))
 
 (defn channel-date-handler [{:keys [ds path-params] :as request}]
@@ -39,6 +42,7 @@
             :message-counts-by-date message-counts-by-date}
      :view (fn [data]
              [layout/base
+              (og/social-tags {:title (str (-> data :date) " " (-> data :channel :name) " | Clojure Slack Archive")})
               [common/channel-date-page data]])}))
 
 (defn search-handler [{:keys [ds query-params] :as req}]
@@ -49,6 +53,7 @@
             :messages messages}
      :view (fn [data]
              [layout/base
+              (og/social-tags {:title (str "Search Clojure Slack Archive")})
               [common/search-page data]])}))
 
 (defn routes []
