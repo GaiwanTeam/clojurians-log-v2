@@ -1,4 +1,4 @@
-.PHONY=pgcli deploy
+.PHONY: pgcli deploy init dev sync-config
 
 pgcli:
 	pgcli -h localhost -p 54321 -d clojurians_log -U myuser
