@@ -54,6 +54,23 @@
          {:d
           "M14 8a4 4 0 1 0-8 0v7h8V8zM8.027 2.332A6.003 6.003 0 0 0 4 8v6l-3 2v1h18v-1l-3-2V8a6.003 6.003 0 0 0-4.027-5.668 2 2 0 1 0-3.945 0zM12 18a2 2 0 1 1-4 0h4z",
           :fill-rule "evenodd"}]]]]
+   [:div {:class "md:hidden"}
+    [:div {:class "p-4"}
+     [:form {:action "/search"}
+      [:input
+       {:class "appearance-none border border-grey rounded-lg py-2 pl-2"
+        :placeholder "Search"
+        :name "q"
+        :type "search"}]]
+     [:div
+      {:class "absolute inset-y-0 left-0 pl-3 flex items-center justify-center"}
+      [:svg
+       {:class "fill-current text-grey h-4 w-4",
+        :viewbox "0 0 20 20",
+        :xmlns "http://www.w3.org/2000/svg"}
+       [:path
+        {:d
+         "M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"}]]]]]
    [:div {:class "mb-8"}
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
      [:div {:class "opacity-75"} "Channels"]]
