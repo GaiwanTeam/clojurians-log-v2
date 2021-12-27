@@ -113,7 +113,8 @@
         {:d
          "M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"}]]]]]])
 
-(defn message [{:keys [image-192 text display-name created-at]} member-cache-id-name]
+(defn message [{:member/keys [image-192 display-name]
+                :message/keys [text created-at]} member-cache-id-name]
   [:div {:class "flex items-start mb-4 text-sm"}
    [:img
     {:class "w-10 h-10 rounded mr-3",
@@ -123,6 +124,11 @@
      [:span {:class "text-grey text-xs"} (str " " created-at)]]
     [:p {:class "text-black leading-normal"}
      (mformat/message->hiccup text member-cache-id-name)]]])
+
+(defn render-replies [replies member-cache-id-name]
+  [:div {:class "ml-2 pl-3 border-l-2 border-gray-100"}
+   (for [msg replies]
+     [message msg member-cache-id-name])])
 
 (defn message-with-tag []
   [:div {:class "flex items-start mb-4 text-sm"}
@@ -206,8 +212,10 @@
             :class "text-indigo-700 p-1"}
         (str created-at "  --- (" count " messages)")]])]])
 
-(defn channel-date-page [{:keys [channels channel messages date member-cache-id-name]}]
+(defn channel-date-page [{:keys [channels channel messages replies date member-cache-id-name]}]
   [slack-layout
    {:channels channels :title (:name channel) :subtitle (:topic channel)}
    (for [msg messages]
-     [message msg member-cache-id-name])])
+     [:div
+      [message msg member-cache-id-name]
+      [render-replies (get replies (:message/id msg)) member-cache-id-name]])])

@@ -1,5 +1,7 @@
 (ns clojurians-log.db.queries
   (:require [next.jdbc :as jdbc]
+            [next.jdbc.result-set :as rs]
+            [next.jdbc.optional :as jdbc-opts]
             [integrant.repl.state :as ig-state]
             [honey.sql :as sql]))
 
@@ -26,7 +28,7 @@
                 :join [:member [:= :message.member-id :member.id]] 
                 }
         query (sql/format sqlmap)
-        data (jdbc/execute! ds query)]
+        data (jdbc/execute! ds query {:builder-fn rs/as-kebab-maps})]
     data))
 
 (defn replies-for-messages [ds channel-id message-ids]
@@ -40,7 +42,7 @@
                 :join [:member [:= :message.member-id :member.id]] 
                 }
         query (sql/format sqlmap)
-        data (jdbc/execute! ds query)]
+        data (jdbc/execute! ds query {:builder-fn rs/as-kebab-maps})]
     data))
 
 (defn channel-by-name [ds channel-name]

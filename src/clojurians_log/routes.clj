@@ -32,12 +32,15 @@
         channels (queries/all-channels ds)
         member-cache-id-name (queries/member-cache-id-name ds)
         messages (queries/messages-by-channel-date ds (:id channel) (:date path-params))
+        replies (->> (queries/replies-for-messages ds (:id channel) (map :message/id messages))
+                     (group-by :message/parent))
         message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
     {:status 200
      :body {:channels channels
             :channel channel
             :member-cache-id-name member-cache-id-name
             :messages messages
+            :replies replies
             :date (:date path-params)
             :message-counts-by-date message-counts-by-date}
      :view (fn [data]
