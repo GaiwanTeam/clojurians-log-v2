@@ -1,10 +1,11 @@
 (ns clojurians-log.components.common
-  (:require [clojurians-log.message.format :as mformat]))
+  (:require [clojurians-log.message.format :as mformat]
+            [clojurians-log.components.icons :as icons]))
 
 (defn sidebar []
   [:div
    {:class
-    "bg-indigo-900 text-purple-300 flex-none p-4 hidden md:block"}
+    "bg-indigo-900 text-purple-300 flex-none p-4"}
    [:div {:class "cursor-pointer mb-4"}
     [:div
      {:class
@@ -33,7 +34,9 @@
 (defn channel-list [channels]
   [:div
    {:class
-    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 hidden md:block overflow-hidden overflow-y-scroll"}
+    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 overflow-hidden overflow-y-scroll 
+     absolute inset-y-0 left-0 transform -translate-x-full transition duration-200 ease-in-out
+     md:relative md:translate-x-0"}
    [:div {:class "text-white mb-2 mt-3 px-4 flex justify-between"}
     [:div {:class "flex-auto"}
      [:h1 {:class "font-semibold text-xl leading-tight mb-1 truncate"}
@@ -44,13 +47,13 @@
        [:circle {:cx "10", :cy "10", :r "10"}]]
       [:span {:class "text-white opacity-50 text-sm"} "Clojure programming"]]]
     #_[:div
-     [:svg
-      {:class "h-6 w-6 fill-current text-white opacity-25",
-       :viewbox "0 0 20 20"}
-      [:path
-       {:d
-        "M14 8a4 4 0 1 0-8 0v7h8V8zM8.027 2.332A6.003 6.003 0 0 0 4 8v6l-3 2v1h18v-1l-3-2V8a6.003 6.003 0 0 0-4.027-5.668 2 2 0 1 0-3.945 0zM12 18a2 2 0 1 1-4 0h4z",
-        :fill-rule "evenodd"}]]]]
+       [:svg
+        {:class "h-6 w-6 fill-current text-white opacity-25",
+         :viewbox "0 0 20 20"}
+        [:path
+         {:d
+          "M14 8a4 4 0 1 0-8 0v7h8V8zM8.027 2.332A6.003 6.003 0 0 0 4 8v6l-3 2v1h18v-1l-3-2V8a6.003 6.003 0 0 0-4.027-5.668 2 2 0 1 0-3.945 0zM12 18a2 2 0 1 1-4 0h4z",
+          :fill-rule "evenodd"}]]]]
    [:div {:class "mb-8"}
     [:div {:class "px-4 mb-2 text-white flex justify-between items-center"}
      [:div {:class "opacity-75"} "Channels"]]
@@ -64,10 +67,15 @@
 
 (defn top-bar [title subtitle]
   [:div {:class "border-b flex px-6 py-2 items-center flex-none"}
-   [:div {:class "flex flex-col"}
-    [:h3 {:class "text-grey-900 mb-1 font-extrabold"} title]
-    [:div {:class "text-grey-dark text-sm truncate"}
-     (mformat/message->text subtitle {})]]
+   [:div {:class "flex flex-row justify-between w-full items-center"}
+    [:div
+     [:h3 {:class "text-grey-900 mb-1 font-extrabold"} title]
+     [:div {:class "text-grey-dark text-sm truncate"}
+      (mformat/message->text subtitle {})]]
+    [:button {:class "md:hidden p-4 focus:outline-none focus:bg-gray-700"
+              :id "mobile-menu-btn"}
+     [:div {:class "w-6 h-6"}
+      icons/menu]]]
    [:div {:class "ml-auto hidden md:block"}
     [:div {:class "relative"}
      [:form {:action "/search"}
