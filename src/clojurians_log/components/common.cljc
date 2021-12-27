@@ -3,9 +3,8 @@
             [clojurians-log.components.icons :as icons]))
 
 (defn sidebar []
-  [:div
-   {:class
-    "bg-indigo-900 text-purple-300 flex-none p-4"}
+  [:div {:class "bg-indigo-900 text-purple-300 flex-none p-4"
+         :id "sidebar"}
    [:div {:class "cursor-pointer mb-4"}
     [:div
      {:class
@@ -36,7 +35,8 @@
    {:class
     "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 overflow-hidden overflow-y-scroll 
      absolute inset-y-0 left-0 transform -translate-x-full transition duration-200 ease-in-out
-     md:relative md:translate-x-0"}
+     md:relative md:translate-x-0 z-10"
+    :id "sidebar"}
    [:div {:class "text-white mb-2 mt-3 px-4 flex justify-between"}
     [:div {:class "flex-auto"}
      [:h1 {:class "font-semibold text-xl leading-tight mb-1 truncate"}
