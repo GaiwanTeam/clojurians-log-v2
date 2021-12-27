@@ -21,11 +21,25 @@
                 :where [:and
                         [:= :message.channel-id channel-id]
                         [:= [[:cast :message.created-at :DATE]] [:cast date :DATE]]]
+                ;; TODO: should sort based on ts instead of id
                 :order-by [:message.id]
                 :join [:member [:= :message.member-id :member.id]] 
                 }
         query (sql/format sqlmap)
-        _ (println query)
+        data (jdbc/execute! ds query)]
+    data))
+
+(defn replies-for-messages [ds channel-id message-ids]
+  (let [sqlmap {:select [:message.* :member.*]
+                :from [:message]
+                :where [:and
+                        [:= :message.channel-id channel-id]
+                        [:in :message.parent message-ids]]
+                ;; TODO: should sort based on ts instead of id
+                :order-by [:message.id]
+                :join [:member [:= :message.member-id :member.id]] 
+                }
+        query (sql/format sqlmap)
         data (jdbc/execute! ds query)]
     data))
 
@@ -78,6 +92,9 @@
 
 (comment
   (def ds (:clojurians-log.db.core/datasource ig-state/system))
+
+  (replies-for-messages ds 79 [619])
+
 
   (member-cache-id-name ds)
 
