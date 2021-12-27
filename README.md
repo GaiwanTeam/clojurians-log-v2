@@ -119,6 +119,25 @@ this can be done again to reset the database to a clean slate.
 
 For populating the db from a slack archive, check `bulk_import.clj` file.
 
+## Migration files
+
+We use `migratus` library to manage migrations.
+
+To create new migration files, from the REPL run the following
+
+```clojure
+user> (go)
+Launching with profile  :dev
+:initiated
+user> (def mc (migrations-config))
+#'user/mc
+user> (require '[clojurians-log.db.migrations :as m])
+nil
+user> (m/create mc "add-name-to-user-table")
+```
+
+This will create two files, but just delete the down files as we don't want to rollback.
+
 ## Secrets
 
 Secrets are stored in `resources/config/secrets.edn`

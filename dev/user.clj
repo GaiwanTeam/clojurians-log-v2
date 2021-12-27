@@ -9,3 +9,5 @@
 (defn system []
   @(jit integrant.repl.state/system))
 
+(defn migrations-config []
+  (-> (system) :clojurians-log.db.core/migrations))

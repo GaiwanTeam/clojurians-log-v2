@@ -1,29 +1,23 @@
 (ns clojurians-log.db.migrations
   (:require [migratus.core :as migratus]))
 
+(defn init [config]
+  (migratus/init config))
 
-(def config {:store                :database
-             :migration-dir        "migrations/"
-             :init-script          "init.sql" ;script should be located in the :migration-dir path
-             ;defaults to true, some databases do not support
-             ;schema initialization in a transaction
-             :init-in-transaction? false
-             :migration-table-name "foo_bar"
-             :db {:classname   "org.h2.Driver"
-                  :subprotocol "h2"
-                  :subname     "site.db"}})
+(defn create [config name]
+  (migratus/create config name))
 
-;initialize the database using the 'init.sql' script
-(migratus/init config)
+(defn migrate [config]
+  (migratus/migrate config))
 
-;apply pending migrations
-(migratus/migrate config)
+(defn rollback [config]
+  "rollback the migration with the latest timestamp"
+  (migratus/rollback config))
 
-;rollback the migration with the latest timestamp
-(migratus/rollback config)
+(defn up [config id]
+  "bring up migrations matching the ids"
+  (migratus/up config 20111206154000))
 
-;bring up migrations matching the ids
-(migratus/up config 20111206154000)
-
-;bring down migrations matching the ids
-(migratus/down config 20111206154000)
+(defn down [config id]
+  "bring down migrations matching the ids"
+  (migratus/down config 20111206154000))

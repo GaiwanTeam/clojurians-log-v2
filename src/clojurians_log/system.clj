@@ -26,7 +26,14 @@
       :port (profile {:prod 5432 :dev 54321})
       :password (profile {:prod (secret :db :password) :dev "mypass"})
       :dbname "clojurians_log"
-      :serverTimezone "UTC"}}))
+      :serverTimezone "UTC"}
+     :clojurians-log.db.core/migrations
+     {:opts {:store                :database
+             :migration-dir        "migrations/"
+             :init-script          "init.sql"
+             :init-in-transaction? false
+             :migration-table-name "migrations"}
+      :ds (ig/ref :clojurians-log.db.core/datasource)}}))
 
 (defn go [& [{:keys [profile]
               :or {profile :dev}}]]
