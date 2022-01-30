@@ -27,6 +27,10 @@
       :password (profile {:prod (secret :db :password) :dev "mypass"})
       :dbname "clojurians_log"
       :serverTimezone "UTC"}
+     :clojurians-log.slack.socket/app
+     {:ds (ig/ref :clojurians-log.db.core/datasource)
+      :slack-app-token (or (secret :slack-socket :app-token) "xapp-12345-67890")
+      :slack-bot-token (or (secret :slack-socket :bot-token) "xoxb-12345-67890")}
      :clojurians-log.db.core/migrations
      {:opts {:store                :database
              :migration-dir        "migrations/"
