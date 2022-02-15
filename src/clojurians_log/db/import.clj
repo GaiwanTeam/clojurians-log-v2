@@ -37,9 +37,9 @@
   nil)
 
 (defmethod event->tx ["message" "message_changed"] [{:keys [message channel]} cache]
-  (event->tx (assoc message :channel channel)))
+  #_(event->tx (assoc message :channel channel)))
 
 (defmethod event->tx ["message" "thread_broadcast"] [message cache]
   nil
   #_(assoc
-      (message->tx message) :message/thread-broadcast? true))
+     (message->tx message) :message/thread-broadcast? true))
