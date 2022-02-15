@@ -83,5 +83,6 @@ CREATE table if not exists reaction (
  channel_id integer references channel,
  message_id integer references message,
  reaction text,
- url text
+ url text,
+ UNIQUE (member_id, channel_id, message_id, reaction)
 );
