@@ -130,17 +130,23 @@
                                        :channel-id
                                        (get-in cache [:chan-name->id channel]))))
                          data)
-              sqlvals (remove nil? (mapv #(import/event->tx % cache) data))
-              sqlmap {:insert-into [:message]
-                      :values sqlvals
-                      ;;:on-conflict []
-                      :on-conflict {:on-constraint :message_channel_id_ts_key}
-                      :do-update-set {:fields [:text :channel-id]}
-                      ;;:do-nothing true
-                      }
+              message-vals (remove nil? (mapv #(import/event->tx % cache) data))
+              message-query {:insert-into [:message]
+                             :values message-vals
+                             ;;:on-conflict []
+                             :on-conflict {:on-constraint :message_channel_id_ts_key}
+                             :do-update-set {:fields [:text :channel-id]}
+                             ;;:do-nothing true
+                             }
+              reaction-vals (remove nil? (mapv #(import/reaction->tx % cache) data))
+              reaction-query {:insert-into [:reaction]
+                              :values reaction-vals}
               ]
-          (when (seq sqlvals)
-            (jdbc/execute! ds (sql/format sqlmap))))))
+          (when (seq message-vals)
+            (jdbc/execute! ds (sql/format message-query))
+            (when (seq reaction-vals)
+              (jdbc/execute! ds (sql/format reaction-query)))
+            ))))
     (println (format "%4d files [%10.2f s] <- %s"
                      @file-count
                      (/ (double (- (. System (nanoTime)) start#)) 1000000000.0)
@@ -220,9 +226,34 @@
 
     (def path "../clojurians-log-data/sample_data")
 
-    (messages ds path "4clojure" (get-cache))
+    (messages ds path "kaocha" (get-cache))
 
     (messages-all path)
 
     ,)
-  ,)
+
+  (let [query {:insert-into [:reaction]
+               :values [{:channel-id 1
+                         :member-id 1829
+                         :message-id 23515}]
+               :on-conflict {}
+               :returning [:id :member-id]}]
+    (jdbc/execute! ds (sql/format query)))
+
+  (let [query {:delete-from [:reaction]
+               :returning [:id]}]
+    (jdbc/execute! ds (sql/format query)))
+
+  (let [query #_{:insert-into [:reaction]
+                 :values [{:channel-id 1
+                           :member-id 1829
+                           :message-id 22160}]}
+        {:select [:*]
+         :from [:message]
+         :where [:and
+                 [:= :member-id 1829]
+                 [:= :channel-id 1]]
+         :limit 2}]
+    (jdbc/execute! ds (sql/format query {:return-keys true})))
+
+    ,)
