@@ -37,9 +37,22 @@
   nil)
 
 (defmethod event->tx ["message" "message_changed"] [{:keys [message channel]} cache]
-  (event->tx (assoc message :channel channel)))
+  #_(event->tx (assoc message :channel channel)))
 
 (defmethod event->tx ["message" "thread_broadcast"] [message cache]
   nil
   #_(assoc
-      (message->tx message) :message/thread-broadcast? true))
+     (message->tx message) :message/thread-broadcast? true))
+
+(defn reaction->tx [{:keys [channel-id user reactions ts thread-ts] :as message}
+                    {:keys [member-slack->db-id message-ts->db-id] :as cache}]
+  (let [member-id (get member-slack->db-id user)
+        message-id (get message-ts->db-id ts)]
+    (mapcat (fn reaction-val [reaction-entry]
+              (map (fn reaction-for-each-user [user]
+                     {:channel-id channel-id
+                      :member-id (get member-slack->db-id user)
+                      :message-id message-id
+                      :reaction (:name reaction-entry)})
+                   (:users reaction-entry)))
+            reactions)))

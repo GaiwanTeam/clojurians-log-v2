@@ -24,6 +24,12 @@
         lambdaisland/uri      {:mvn/version "1.4.54"}
         camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.2"}
 
+        ;; Slack SDK
+        com.slack.api/bolt-socket-mode                      {:mvn/version "1.7.0"}
+        javax.websocket/javax.websocket-api                 {:mvn/version "1.1"}
+        org.glassfish.tyrus.bundles/tyrus-standalone-client {:mvn/version "1.17"}
+        com.slack.api/bolt                                  {:mvn/version "1.7.0"}
+
         ;; db
         com.github.seancorfield/next.jdbc {:mvn/version "1.2.659"}
         org.postgresql/postgresql {:mvn/version "42.2.10"}

@@ -124,28 +124,40 @@
                                     :subtype
                                     :purpose
                                     :user
+                                    :reactions
                                     :ts
                                     :thread-ts]))
                           (map #(assoc %
                                        :channel-id
                                        (get-in cache [:chan-name->id channel]))))
                          data)
-              sqlvals (remove nil? (mapv #(import/event->tx % cache) data))
-              sqlmap {:insert-into [:message]
-                      :values sqlvals
-                      ;;:on-conflict []
-                      :on-conflict {:on-constraint :message_channel_id_ts_key}
-                      :do-update-set {:fields [:text :channel-id]}
-                      ;;:do-nothing true
-                      }
-              ]
-          (when (seq sqlvals)
-            (jdbc/execute! ds (sql/format sqlmap))))))
+              message-vals (remove nil? (mapv #(import/event->tx % cache) data))
+              message-query {:insert-into [:message]
+                             :values message-vals
+                             ;;:on-conflict []
+                             :on-conflict {:on-constraint :message_channel_id_ts_key}
+                             :do-update-set {:fields [:text :channel-id]}
+                             ;;:do-nothing true
+                             :returning [:ts :id]
+                             }]
+          (when (seq message-vals)
+            (let [inserted-messages (jdbc/execute! ds (sql/format message-query))
+                  _ (println "INSERTED HERE")
+                  cache (assoc cache :message-ts->db-id (into {}
+                                                              (map (juxt :ts :id))
+                                                              inserted-messages))
+                  reaction-vals (remove nil? (mapcat #(import/reaction->tx % cache)
+                                                     (filter :reactions data)))
+                  _ (println "reaction vals " reaction-vals)
+                  reaction-query {:insert-into [:reaction]
+                                  :values reaction-vals}]
+              (when (seq reaction-vals)
+                (println "Added rx")
+                (jdbc/execute! ds (sql/format reaction-query))))))))
     (println (format "%4d files [%10.2f s] <- %s"
                      @file-count
                      (/ (double (- (. System (nanoTime)) start#)) 1000000000.0)
                      channel))))
-
 
 (defn chan-cache [ds]
   (let [sqlmap {:select [:id :name]
@@ -220,9 +232,43 @@
 
     (def path "../clojurians-log-data/sample_data")
 
-    (messages ds path "4clojure" (get-cache))
+    (messages ds path "graalvm" (get-cache))
 
     (messages-all path)
 
     ,)
-  ,)
+
+  (let [query {:insert-into [:reaction]
+               :values [{:channel-id 1
+                         :member-id 1829
+                         :message-id 23515}]
+               #_#_:on-conflict {}
+               :returning [:channel-id :id]}]
+    (jdbc/execute! ds (sql/format query)))
+
+  (let [query {:delete-from [:reaction]
+               :returning [:id]}]
+    (jdbc/execute! ds (sql/format query)))
+
+  (let [query {:select [:*]
+               :from [:reaction]
+               :limit 5}]
+    (jdbc/execute! ds (sql/format query {:return-keys true})))
+
+  (let [query {:select [[[:count :*]]]
+               :from [:reaction]}]
+    (jdbc/execute! ds (sql/format query {:return-keys true})))
+
+  (let [query #_{:insert-into [:reaction]
+                 :values [{:channel-id 1
+                           :member-id 1829
+                           :message-id 22160}]}
+        {:select [:*]
+         :from [:message]
+         :where [:and
+                 [:= :member-id 1829]
+                 [:= :channel-id 1]]
+         :limit 2}]
+    (jdbc/execute! ds (sql/format query {:return-keys true})))
+
+    ,)

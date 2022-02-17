@@ -32,15 +32,27 @@
         channels (queries/all-channels ds)
         member-cache-id-name (queries/member-cache-id-name ds)
         messages (queries/messages-by-channel-date ds (:id channel) (:date path-params))
-        replies (->> (queries/replies-for-messages ds (:id channel) (map :message/id messages))
+        messages-ids (map :message/id messages)
+        raw-replies (queries/replies-for-messages ds (:id channel) messages-ids)
+        raw-replies-ids (map :message/id raw-replies)
+        message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))
+        reactions (->> (queries/reactions-for-messages ds
+                                                       (:id channel)
+                                                       (concat messages-ids
+                                                               raw-replies-ids))
+                       (group-by :reaction/message-id))
+        messages (map #(assoc % :reactions (get reactions (:message/id %))) messages)
+        raw-replies (map #(assoc % :reactions (get reactions (:message/id %))) raw-replies)
+        replies (->> raw-replies
                      (group-by :message/parent))
-        message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
+        ]
     {:status 200
      :body {:channels channels
             :channel channel
             :member-cache-id-name member-cache-id-name
             :messages messages
             :replies replies
+            :reactions reactions
             :date (:date path-params)
             :message-counts-by-date message-counts-by-date}
      :view (fn [data]
