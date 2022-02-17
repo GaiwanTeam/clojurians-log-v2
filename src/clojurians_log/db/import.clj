@@ -45,22 +45,14 @@
      (message->tx message) :message/thread-broadcast? true))
 
 (defn reaction->tx [{:keys [channel-id user reactions ts thread-ts] :as message}
-                    {:keys [member-slack->db-id] :as cache}]
+                    {:keys [member-slack->db-id message-ts->db-id] :as cache}]
   (let [member-id (get member-slack->db-id user)
-        reactions-with-user-ids (map (fn [reaction-entry]
-                                       (update reaction-entry
-                                               :users
-                                               (fn update-user-slack-to-db-id [user-list]
-                                                 (map #(get member-slack->db-id %) user-list))))
-                                     reactions)]
-    (map (fn reaction-val [reaction-entry]
-           {:channel-id channel-id
-            :member-id member-id
-            :ts ts
-            :message-id nil
-            :reaction nil
-            :url nil}
-           )
-         reactions-with-user-ids)
-    )
-  )
+        message-id (get message-ts->db-id ts)]
+    (mapcat (fn reaction-val [reaction-entry]
+              (map (fn reaction-for-each-user [user]
+                     {:channel-id channel-id
+                      :member-id (get member-slack->db-id user)
+                      :message-id message-id
+                      :reaction (:name reaction-entry)})
+                   (:users reaction-entry)))
+            reactions)))
