@@ -33,7 +33,7 @@
 (defn channel-list [channels]
   [:div
    {:class
-    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 overflow-hidden overflow-y-scroll 
+    "bg-indigo-700 text-purple-300 flex-none w-64 pb-6 overflow-hidden overflow-y-scroll
      absolute inset-y-0 left-0 transform -translate-x-full transition duration-200 ease-in-out
      md:relative md:translate-x-0 z-10"
     :id "sidebar"}
@@ -114,7 +114,8 @@
          "M12.9 14.32a8 8 0 1 1 1.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"}]]]]]])
 
 (defn message [{:member/keys [image-192 display-name]
-                :message/keys [text created-at]} member-cache-id-name]
+                :message/keys [text created-at]
+                :keys [reactions]} member-cache-id-name]
   [:div {:class "flex items-start mb-4 text-sm"}
    [:img
     {:class "w-10 h-10 rounded mr-3",
@@ -123,7 +124,9 @@
     [:div [:span {:class "font-bold"} display-name]
      [:span {:class "text-grey text-xs"} (str " " created-at)]]
     [:p {:class "text-black leading-normal"}
-     (mformat/message->hiccup text member-cache-id-name)]]])
+     (mformat/message->hiccup text member-cache-id-name)]
+    (for [reaction reactions]
+      [:span (:count reaction) (mformat/text->emoji (:reaction/reaction reaction))])]])
 
 (defn render-replies [replies member-cache-id-name]
   [:div {:class "ml-2 pl-3 border-l-2 border-gray-100"}
