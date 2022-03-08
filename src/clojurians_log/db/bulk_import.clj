@@ -177,7 +177,9 @@
 
 (defn log-bot-channels []
   (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
-        bot-chans (clj-slack/get-users-conversations slack-conn {:user "U055W814A"})]
+        bot-chans (clj-slack/get-users-conversations
+                   slack-conn
+                   {:user (:slack-bot-user (system/secrets))})]
     (mapv :name bot-chans)))
 
 (defn channel-member-import
