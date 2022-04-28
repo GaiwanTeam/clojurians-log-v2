@@ -6,6 +6,9 @@
 (defn go [& [opts]]
   ((jit clojurians-log.system/go) opts))
 
+(defn halt [& [opts]]
+  ((jit integrant.repl/halt)))
+
 (defn system []
   @(jit integrant.repl.state/system))
 

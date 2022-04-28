@@ -1,20 +1,19 @@
 (ns clojurians-log.slack.socket
   "Slack Socket App which maintains a websocket connection to Slack
   and receives real time events."
-  (:require [integrant.core :as ig]
+  (:require [camel-snake-kebab.core :as csk]
             [camel-snake-kebab.extras :as cske]
-            [camel-snake-kebab.core :as csk]
+            [clojure.edn :as edn]
             [clojure.java.data :as jd]
-            [clojure.walk :as walk])
+            [integrant.core :as ig])
   (:import (com.slack.api.bolt App AppConfig)
-           ;; (com.slack.api Slack SlackConfig)
-           (com.slack.api.bolt.socket_mode SocketModeApp)
            (com.slack.api.bolt.handler BoltEventHandler)
-           (com.slack.api.model.event MessageEvent
-                                      MessageDeletedEvent
-                                      PinAddedEvent
-                                      PinRemovedEvent
-                                      MessageChangedEvent)))
+           (com.slack.api.bolt.socket_mode SocketModeApp)
+           (com.slack.api.model.event
+            ChannelCreatedEvent ChannelRenameEvent
+            MessageEvent MessageChangedEvent MessageDeletedEvent MessageRepliedEvent
+            MessageChannelJoinEvent
+            ReactionAddedEvent ReactionRemovedEvent)))
 
 (set! *warn-on-reflection* true)
 
@@ -23,7 +22,7 @@
 (defmethod handle-event :default [ds event]
   (println "Default event called")
   (let [event (cske/transform-keys csk/->kebab-case-keyword event)]
-    (println event))
+    (prn event))
   (println "-------"))
 
 (defn create-handler
@@ -49,7 +48,13 @@
         app (doto (App. app-conf)
               (.event MessageEvent handler)
               (.event MessageChangedEvent handler)
-              (.event MessageDeletedEvent handler))]
+              (.event MessageRepliedEvent handler)
+              (.event MessageDeletedEvent handler)
+              (.event MessageChannelJoinEvent handler)
+              (.event ChannelRenameEvent handler)
+              (.event ChannelCreatedEvent handler)
+              (.event ReactionAddedEvent handler)
+              (.event ReactionRemovedEvent handler))]
     (doto (SocketModeApp. ^String slack-app-token app)
       (.startAsync))))
 
