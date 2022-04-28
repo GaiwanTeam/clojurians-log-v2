@@ -150,6 +150,12 @@ You can use the docker image `ghcr.io/clojurians-log-v2:main` to run an instance
 
 Read more in [./docs/database.md](./docs/database.md) to see how to init the DB and populate it with slack data.
 
+You also need to mount a secrets.edn file for the docker container to launch properly
+
+A mount bind like this should work:
+
+`/home/user/clojurians-log/secrets.edn:/src/resources/config/secrets.edn`
+
 ## Contribute
 
 This project is currently undergoing major changes. Before you contribute please

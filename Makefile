@@ -1,6 +1,10 @@
 .PHONY: pgcli deploy init dev sync-config
 
+psql:
+	docker exec -it clojurians-log-v2_db_1 psql -U myuser clojurians_log
+
 pgcli:
+	echo "Password is: mypass"
 	pgcli -h localhost -p 54321 -d clojurians_log -U myuser
 
 deploy:
