@@ -142,6 +142,14 @@ This will create two files, but just delete the down files as we don't want to r
 
 Secrets are stored in `resources/config/secrets.edn`
 
+## Deployment
+
+GitHub actions builds a docker image from the `main` branch. Right now they aren't tagged.
+
+You can use the docker image `ghcr.io/clojurians-log-v2:main` to run an instance.
+
+Read more in [./docs/database.md](./docs/database.md) to see how to init the DB and populate it with slack data.
+
 ## Contribute
 
 This project is currently undergoing major changes. Before you contribute please

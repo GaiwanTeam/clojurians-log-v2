@@ -27,6 +27,6 @@ user=> (bi/channel-member-import)
 
 Then to start importing of all messages from a dump
 
-* unzip slack export dump in /root/clojurians-log-data/$(date +%F)
-* this directory gets mounted to `/data` as read only bind in docker container
+* unzip slack export dump somewhere eg: `/root/clojurians-log-data/$(date +%F)`
+* mount `/root/clojurians-log-data/` directory to `/data` as read only bind in docker container
 * from the repl run `(bi/messages-all "/data/2021-10-21")` to start the import process
