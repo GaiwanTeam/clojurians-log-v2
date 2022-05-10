@@ -221,24 +221,25 @@
     (messages ds path (:name chan) (get-cache))))
 
 (comment
-  (do
-    ;; eval buffer then eval this do form to populate db
-    ;; make sure slack archive is stored in src/sample_data
-    (defn exec [sqlmap]
-      (println (sql/format sqlmap))
-      (jdbc/execute! ds (sql/format sqlmap)))
+  ;; eval buffer then eval this do form to populate db
+  ;; make sure slack archive is stored in src/sample_data
+  (defn exec [sqlmap]
+    (println (sql/format sqlmap))
+    (jdbc/execute! ds (sql/format sqlmap)))
 
-    (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
+  (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
 
-    (channel-member-import)
+  (channel-member-import)
 
-    (def path "../clojurians-log-data/sample_data")
+  (def path "../clojurians-log-data/sample_data")
 
-    (messages ds path "graalvm" (get-cache))
+  (messages ds path "announcements" (get-cache))
 
-    (messages-all path)
+  (in-ns 'clojurians-log.db.bulk-import)
+  (use 'clojurians-log.db.bulk-import)
+  (messages ds "/data/2021-10-31" "announcements" (get-cache))
 
-    ,)
+  (messages-all path)
 
   (let [query {:insert-into [:reaction]
                :values [{:channel-id 1
@@ -273,4 +274,4 @@
          :limit 2}]
     (jdbc/execute! ds (sql/format query {:return-keys true})))
 
-    ,)
+  ,)

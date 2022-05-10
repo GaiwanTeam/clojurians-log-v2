@@ -19,9 +19,8 @@ On the server first we populate channel and member data using the slack api:
 ```
 root@ark /srv/ox/clojurians-log-v2$ docker exec -it clojurians-log-v2 bash
 root@ark:/src# rlwrap nc 0 50505
-user=> (require '[clojurians-log.db.bulk-import :as bi])
-nil
-user=> (bi/channel-member-import)
+(require '[clojurians-log.db.bulk-import :as bi])
+(bi/channel-member-import)
 {:imported-channels-count 849, :imported-members-count 22685}
 ```
 
