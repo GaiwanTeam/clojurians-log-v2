@@ -14,3 +14,7 @@
 
 (defn migrations-config []
   (-> (system) :clojurians-log.db.core/migrations))
+
+(defn browse []
+  ((jit clojure.java.browse/browse-url)
+   "http://localhost:8000"))
