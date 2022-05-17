@@ -60,10 +60,12 @@
     (doto (SocketModeApp. ^String slack-app-token app)
       (.startAsync))))
 
-(defn create-event-tx-logger [config event-ch]
+(defn create-event-tx-logger [{:keys [tx-log-directory]} event-ch]
   (async/go-loop []
     (when-let [event (async/<! event-ch)]
-      (spit "/tmp/test.txt" (prn-str event) :append true)
+      (let [tx-log-file (io/file tx-log-directory
+                                 (str (java.time.LocalDate/now) ".edn"))]
+        (spit tx-log-file (prn-str event) :append true))
       (recur))))
 
 (defmethod ig/init-key ::app [_ config]
@@ -80,7 +82,7 @@
 
 (comment
   (def c (async/chan 10))
-  (def tx-logger (create-event-tx-logger {} c))
+  (def tx-logger (create-event-tx-logger {:tx-log-directory "/tmp/tx"} c))
   (time
    (doseq [i (range 30)]
      (async/>!! c {:data (range (* i 20))})))
