@@ -136,6 +136,6 @@
           (map (juxt :slack-id :id))
           data)))
 
-(defn get-cache []
+(defn get-cache [ds]
   {:chan-name->id (chan-cache ds)
    :member-slack->db-id (member-cache ds)})

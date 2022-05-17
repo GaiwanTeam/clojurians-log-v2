@@ -200,7 +200,7 @@
 
 (defn messages-all [path]
   (for [chan (queries/all-channels (queries/repl-ds))]
-    (messages ds path (:name chan) (queries/get-cache))))
+    (messages ds path (:name chan) (queries/get-cache ds))))
 
 (comment
   ;; eval buffer then eval this do form to populate db
@@ -217,11 +217,11 @@
 
   (def path "../clojurians-log-data/sample_data")
 
-  (messages ds path "announcements" (queries/get-cache))
+  (messages ds path "announcements" (queries/get-cache ds))
 
   (in-ns 'clojurians-log.db.bulk-import)
   (use 'clojurians-log.db.bulk-import)
-  (messages ds "/data/2021-10-31" "announcements" (queries/get-cache))
+  (messages ds "/data/2021-10-31" "announcements" (queries/get-cache ds))
 
   (messages-all path)
 
