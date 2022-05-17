@@ -40,6 +40,7 @@
 (defn create-app-conf [slack-bot-token]
   (.build
    (doto (AppConfig/builder)
+     (.threadPoolSize 1)
      (.singleTeamBotToken slack-bot-token))))
 
 (defn create-socket-app [{:keys [ds slack-bot-token slack-app-token]}]
