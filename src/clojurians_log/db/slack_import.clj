@@ -16,8 +16,10 @@
   [event ds cache]
   (let [query (-> event
                   (assoc :channel-id (:channel event))
-                  (import/event->tx cache))]
-    (jdbc/execute! ds (sql/format query))))
+                  (import/event->tx cache))
+        sql-query (sql/format query)]
+    #_(println sql-query)
+    (jdbc/execute! ds sql-query)))
 
 (defmethod from-event ["message" "message_changed"]
   [event ds cache]
