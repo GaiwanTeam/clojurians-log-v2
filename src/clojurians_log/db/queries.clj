@@ -33,6 +33,7 @@
   (let [sqlmap {:select [:message.* :member.*]
                 :from [:message]
                 :where [:and
+                        [:is :parent nil]
                         [:= :message.channel-id channel-id]
                         [:= [[:cast :message.created-at :DATE]] [:cast date :DATE]]]
                 ;; TODO: should sort based on ts instead of id

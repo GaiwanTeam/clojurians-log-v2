@@ -15,7 +15,6 @@
 (defmethod from-event ["message" nil]
   [event ds cache]
   (let [query (-> event
-                  (assoc :channel-id (:channel event))
                   (import/event->tx cache))
         sql-query (sql/format query)]
     #_(println sql-query)
