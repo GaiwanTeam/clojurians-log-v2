@@ -107,25 +107,20 @@
         data (jdbc/execute! ds query {:builder-fn rs/as-kebab-maps})]
     data))
 
-(comment
-  (def ds (:clojurians-log.db.core/datasource ig-state/system))
-
-  (replies-for-messages ds 79 [619])
-
-  (reactions-for-messages ds 552 [227916])
-
-  (member-cache-id-name ds)
-
-  (take 10
-        (all-messages ds))
-  )
-
 (defn chan-cache [ds]
   (let [sqlmap {:select [:id :name]
                 :from [:channel]}
         data (jdbc/execute! ds (sql/format sqlmap))]
     (into {}
           (map (juxt :name :id))
+          data)))
+
+(defn chan-slack-id->id-cache [ds]
+  (let [sqlmap {:select [:id :slack-id]
+                :from [:channel]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    (into {}
+          (map (juxt :slack-id :id))
           data)))
 
 (defn member-cache [ds]
@@ -138,4 +133,20 @@
 
 (defn get-cache [ds]
   {:chan-name->id (chan-cache ds)
+   :chan-slack-id->id (chan-slack-id->id-cache ds)
    :member-slack->db-id (member-cache ds)})
+
+(comment
+  (def ds (:clojurians-log.db.core/datasource ig-state/system))
+
+  (single-message ds 2 "1652821554.591519")
+
+  (replies-for-messages ds 79 [619])
+
+  (reactions-for-messages ds 552 [227916])
+
+  (member-cache-id-name ds)
+
+  (take 10
+        (all-messages ds))
+  )
