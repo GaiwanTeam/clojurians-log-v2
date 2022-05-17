@@ -200,3 +200,15 @@
              :name-normalized "testnew222"},
    :event-ts "1646727936.004300",
    :type "channel_rename"})
+
+(def channel-joined-event
+  {:channel "C020GQ8LW85",
+   :channel-type "channel",
+   :event-ts "1652772711.926349",
+   :inviter "U01FVSUGVN3",
+   :subtype "channel_join",
+   :team nil,
+   :text "<@U01SNLN6L7P> has joined the channel",
+   :ts "1652772711.926349",
+   :type "message",
+   :user "U01SNLN6L7P"})
