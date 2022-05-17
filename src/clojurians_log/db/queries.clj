@@ -18,6 +18,17 @@
         data (jdbc/execute! ds query {:builder-fn rs/as-kebab-maps})]
     data))
 
+(defn single-message [ds channel-id ts]
+  (let [sqlmap {:select [:message.*]
+                :from [:message]
+                :limit 1
+                :where [:and
+                        [:= :channel-id channel-id]
+                        [:= :ts ts]]}
+        query (sql/format sqlmap)
+        data (jdbc/execute! ds query {:builder-fn rs/as-kebab-maps})]
+    (first data)))
+
 (defn messages-by-channel-date [ds channel-id date]
   (let [sqlmap {:select [:message.* :member.*]
                 :from [:message]
