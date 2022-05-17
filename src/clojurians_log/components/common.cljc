@@ -125,8 +125,12 @@
      [:span {:class "text-grey text-xs"} (str " " created-at)]]
     [:p {:class "text-black leading-normal"}
      (mformat/message->hiccup text member-cache-id-name)]
-    (for [reaction reactions]
-      [:span (:count reaction) (mformat/text->emoji (:reaction/reaction reaction))])]])
+    [:div.slack-message__reactions {:class "mt-2"}
+     (for [reaction reactions]
+       [:div.slack-message__reaction
+        (mformat/text->emoji (:reaction/reaction reaction))
+        " "
+        (:count reaction)])]]])
 
 (defn render-replies [replies member-cache-id-name]
   [:div {:class "ml-2 pl-3 border-l-2 border-gray-100"}
