@@ -43,6 +43,7 @@
     (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "users.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
+          ;; TODO: use member->tx here
           data (into []
                      (comp
                       (map #(utils/select-keys-nested-as
@@ -134,7 +135,7 @@
                          data)
               message-vals (remove nil? (mapv #(import/event->tx % cache) data))
               message-query {:insert-into [:message]
-                             :values message-vals
+                             :values (map :values message-vals)
                              ;;:on-conflict []
                              :on-conflict {:on-constraint :message_channel_id_ts_key}
                              :do-update-set {:fields [:text :channel-id]}
@@ -147,7 +148,7 @@
                   cache (assoc cache :message-ts->db-id (into {}
                                                               (map (juxt :ts :id))
                                                               inserted-messages))
-                  reaction-vals (remove nil? (mapcat #(import/reaction->tx % cache)
+                  reaction-vals (remove nil? (mapcat #(import/reactions->tx % cache)
                                                      (filter :reactions data)))
                   _ (println "reaction vals " reaction-vals)
                   reaction-query {:insert-into [:reaction]
@@ -172,7 +173,7 @@
   If path is nil, imports from the slack api."
   [& [{:keys [path]
        :or {path nil}}]]
-  (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
+  (let [slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token]))
         chan-file (io/file path "channels.json")
         members-file (io/file path "users.json")
         ds (queries/repl-ds)
@@ -212,9 +213,11 @@
     (println (sql/format sqlmap))
     (jdbc/execute! ds (sql/format sqlmap)))
 
-  (def slack-conn (clj-slack/conn (:slack-api-token (system/secrets))))
+  (def slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token])))
+  slack-conn
 
   (channel-member-import)
+  (log-bot-channels)
 
   (def path "../clojurians-log-data/sample_data")
 
