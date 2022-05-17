@@ -11,8 +11,11 @@
   (:import
    (com.slack.api.bolt App AppConfig)
    (com.slack.api.bolt.handler BoltEventHandler)
+   (com.slack.api.bolt.handler.builtin MessageShortcutHandler)
    (com.slack.api.bolt.socket_mode SocketModeApp)
-   (com.slack.api.model.event ChannelCreatedEvent ChannelRenameEvent MessageChangedEvent MessageChannelJoinEvent MessageDeletedEvent MessageEvent MessageRepliedEvent ReactionAddedEvent ReactionRemovedEvent)))
+   (com.slack.api.model.event ChannelCreatedEvent ChannelRenameEvent
+                              MessageChangedEvent MessageChannelJoinEvent MessageDeletedEvent MessageEvent
+                              MessageRepliedEvent ReactionAddedEvent ReactionRemovedEvent)))
 
 (set! *warn-on-reflection* true)
 
@@ -23,6 +26,13 @@
   (let [event (cske/transform-keys csk/->kebab-case-keyword event)]
     (prn event))
   (println "-------"))
+
+(defn create-qna-handler []
+  (reify MessageShortcutHandler
+    (apply [_ payload ctx]
+      (let [event (jd/from-java-deep (.getPayload payload) {})]
+        (println event))
+      (.ack ctx))))
 
 (defn create-handler
   "Create a handler with dispatch-evt"
@@ -56,6 +66,7 @@
               (.event ChannelRenameEvent handler)
               (.event ChannelCreatedEvent handler)
               (.event ReactionAddedEvent handler)
+              (.messageShortcut "qna" (create-qna-handler))
               (.event ReactionRemovedEvent handler))]
     (doto (SocketModeApp. ^String slack-app-token app)
       (.startAsync))))
@@ -75,9 +86,9 @@
      :tx-log (create-event-tx-logger config event-ch)
      :event-ch event-ch}))
 
-(defmethod ig/halt-key! ::app [_ {:keys [^SocketModeApp socket-app event-ch]}]
+(defmethod ig/halt-key! ::app [_ {:keys [^SocketModeApp socket event-ch]}]
   ;; (log/info :socket-app/stoping :now)
-  (.stop ^SocketModeApp socket-app)
+  (.stop ^SocketModeApp socket)
   (async/close! event-ch))
 
 (comment
