@@ -55,6 +55,25 @@
   #_(assoc
       (message->tx message) :message/thread-broadcast? true))
 
+(defn message-deleted->tx [{:keys [deleted-ts channel]}
+                           {:keys [chan-slack-id->id] :as cache}]
+  (let [channel-id (get chan-slack-id->id channel)]
+    {:delete []
+     :from [:message]
+     :where [:and
+             [:= :channel-id channel-id]
+             [:= :ts deleted-ts]]}))
+
+(defn message-tombstone->tx [{:keys [ts channel]}
+                             {:keys [chan-slack-id->id] :as cache}]
+  (let [channel-id (get chan-slack-id->id channel)]
+    {:update :message
+     :set {:text "This message was deleted."
+           :deleted-ts ts}
+     :where [:and
+             [:= :channel-id channel-id]
+             [:= :ts ts]]}))
+
 (defn member->tx [user]
   (let [data (-> user
                  utils/select-keys-nested-as

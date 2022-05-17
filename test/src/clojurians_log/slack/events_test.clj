@@ -103,7 +103,7 @@
              :text "2 become 3"},
    :subtype "message_changed"})
 
-(def message-deleted-event
+(def message-deleted-tombstone-event
   {:channel "C020GQ8LW85",
    :channel-type "channel",
    :event-ts "1646720906.001300",

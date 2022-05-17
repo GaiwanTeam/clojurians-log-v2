@@ -26,6 +26,22 @@
       (assoc :channel (:channel event))
       (from-event ds cache)))
 
+(defmethod from-event ["message" "message_deleted"]
+  [event ds cache]
+  (let [query (-> event
+                  (import/message-deleted->tx cache))
+        sql-query (sql/format query)]
+    (jdbc/execute! ds sql-query)))
+
+(defmethod from-event ["message" "tombstone"]
+  [event ds cache]
+  (println "TOOOOOMB")
+  (println event)
+  (let [query (-> event
+                  (import/message-tombstone->tx cache))
+        sql-query (sql/format query)]
+    (jdbc/execute! ds sql-query)))
+
 (defmethod from-event ["reaction_added" nil]
   [event ds cache]
   (let [query (-> event
