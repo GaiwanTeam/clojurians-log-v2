@@ -25,7 +25,7 @@
       :user (profile {:prod (secret :db :user) :dev "myuser"})
       :port (profile {:prod 5432 :dev 54321})
       :password (profile {:prod (secret :db :password) :dev "mypass"})
-      :dbname "clojurians_log"
+      :dbname (or (secret :db :dbname) "clojurians_log")
       :serverTimezone "UTC"}
      :clojurians-log.slack.socket/app
      {:ds (ig/ref :clojurians-log.db.core/datasource)
