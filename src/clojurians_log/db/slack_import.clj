@@ -54,12 +54,6 @@
   [event ds cache]
   (println "Event import not caught of type: " (:type event)))
 
-(defmethod from-event ["message" "message_changed"]
-  [event ds cache]
-  (-> event
-      (dissoc :subtype)
-      (from-event ds cache)))
-
 (defn from-file [f ds cache]
   (with-open [reader (io/reader f)]
     (doseq [line (line-seq reader)]
