@@ -262,3 +262,27 @@
    :cache_ts 1633394736,
    :event_ts "1633394737.237900",
    :type "team_join"})
+
+(def some-event-types
+  "TODO: update if you find more"
+  ["bot_added"
+   "channel_joined"
+   "commands_changed"
+   "dnd_updated_user"
+   "emoji_changed"
+   "file_change"
+   "file_deleted"
+   "file_public"
+   "file_shared"
+   "file_unshared"
+   "goodbye"
+   "group_left"
+   "member_joined_channel"
+   "member_left_channel"
+   "message"
+   "pin_added"
+   "pin_removed"
+   "reaction_added"
+   "reaction_removed"
+   "team_join"
+   "user_change"])
