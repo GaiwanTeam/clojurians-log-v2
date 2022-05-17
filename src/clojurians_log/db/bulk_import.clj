@@ -1,13 +1,14 @@
 (ns clojurians-log.db.bulk-import
-  (:require [clojure.java.io :as io]
-            [clojurians-log.db.import :as import]
-            [clojurians-log.utils :as utils]
-            [clojurians-log.slack.api :as clj-slack]
-            [clojurians-log.system :as system]
-            [honey.sql :as sql]
-            [integrant.repl.state :as ig-state]
-            [next.jdbc :as jdbc]
-            [clojurians-log.db.queries :as queries]))
+  (:require
+   [clojure.java.io :as io]
+   [clojurians-log.db.import :as import]
+   [clojurians-log.db.queries :as queries]
+   [clojurians-log.slack.api :as clj-slack]
+   [clojurians-log.system :as system]
+   [clojurians-log.utils :as utils]
+   [honey.sql :as sql]
+   [integrant.repl.state :as ig-state]
+   [next.jdbc :as jdbc]))
 
 (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
@@ -159,24 +160,8 @@
                      (/ (double (- (. System (nanoTime)) start#)) 1000000000.0)
                      channel))))
 
-(defn chan-cache [ds]
-  (let [sqlmap {:select [:id :name]
-                :from [:channel]}
-        data (jdbc/execute! ds (sql/format sqlmap))]
-    (into {}
-          (map (juxt :name :id))
-          data)))
-
-(defn member-cache [ds]
-  (let [sqlmap {:select [:id :slack-id]
-                :from [:member]}
-        data (jdbc/execute! ds (sql/format sqlmap))]
-    (into {}
-          (map (juxt :slack-id :id))
-          data)))
-
 (defn log-bot-channels []
-  (let [slack-conn (clj-slack/conn (:slack-api-token (system/secrets)))
+  (let [slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token]))
         bot-chans (clj-slack/get-users-conversations
                    slack-conn
                    {:user (:slack-bot-user (system/secrets))})]
@@ -212,9 +197,9 @@
     (println stats)
     stats))
 
-(defn- get-cache []
-  {:chan-name->id (chan-cache ds)
-   :member-slack->db-id (member-cache ds)})
+(defn get-cache []
+  {:chan-name->id (queries/chan-cache ds)
+   :member-slack->db-id (queries/member-cache ds)})
 
 (defn messages-all [path]
   (for [chan (queries/all-channels (queries/repl-ds))]

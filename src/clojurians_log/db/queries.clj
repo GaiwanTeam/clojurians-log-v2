@@ -1,9 +1,9 @@
 (ns clojurians-log.db.queries
-  (:require [next.jdbc :as jdbc]
-            [next.jdbc.result-set :as rs]
-            [next.jdbc.optional :as jdbc-opts]
-            [integrant.repl.state :as ig-state]
-            [honey.sql :as sql]))
+  (:require
+   [honey.sql :as sql]
+   [integrant.repl.state :as ig-state]
+   [next.jdbc :as jdbc]
+   [next.jdbc.result-set :as rs]))
 
 (defn repl-ds
   "only for repl usage, don't use this directly"
@@ -119,3 +119,19 @@
   (take 10
         (all-messages ds))
   )
+
+(defn chan-cache [ds]
+  (let [sqlmap {:select [:id :name]
+                :from [:channel]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    (into {}
+          (map (juxt :name :id))
+          data)))
+
+(defn member-cache [ds]
+  (let [sqlmap {:select [:id :slack-id]
+                :from [:member]}
+        data (jdbc/execute! ds (sql/format sqlmap))]
+    (into {}
+          (map (juxt :slack-id :id))
+          data)))
