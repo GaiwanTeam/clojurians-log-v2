@@ -7,6 +7,8 @@
    [clojure.core.async :as async]
    [clojure.java.data :as jd]
    [clojure.java.io :as io]
+   [clojurians-log.db.queries :as queries]
+   [clojurians-log.db.slack-import :as slack-import]
    [integrant.core :as ig])
   (:import
    (com.slack.api.bolt App AppConfig)
@@ -16,12 +18,17 @@
 
 (set! *warn-on-reflection* true)
 
+(def cache (atom {}))
+
 (defmulti handle-event (fn [ds event] (:type event)))
 
 (defmethod handle-event :default [ds event]
   (println "Default event called")
+  (when-not (seq @cache)
+    (reset! cache (queries/get-cache ds)))
   (let [event (cske/transform-keys csk/->kebab-case-keyword event)]
-    (prn event))
+    (prn event)
+    (slack-import/from-event event ds @cache))
   (println "-------"))
 
 (defn create-handler
