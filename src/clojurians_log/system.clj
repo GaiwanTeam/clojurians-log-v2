@@ -35,8 +35,8 @@
      :clojurians-log.db.core/migrations
      {:opts {:store                :database
              :migration-dir        "migrations/"
-             :init-script          "init.sql"
-             :init-in-transaction? false
+             ;; :init-script          "init.sql"
+             ;; :init-in-transaction? false
              :migration-table-name "migrations"}
       :ds (ig/ref :clojurians-log.db.core/datasource)}}))
 
