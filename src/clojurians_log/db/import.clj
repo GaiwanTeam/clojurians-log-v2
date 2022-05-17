@@ -1,6 +1,7 @@
 (ns clojurians-log.db.import
   (:require
    [clojure.string :as string]
+   [clojurians-log.db.queries :as queries]
    [clojurians-log.time-utils :as time-utils]
    [clojurians-log.utils :as utils]))
 
@@ -13,9 +14,11 @@
   ;; about
   nil)
 
-(defn message->tx [{:keys [channel-id user text ts thread-ts] :as message}
-                   {:keys [member-slack->db-id] :as cache}]
+(defn message->tx [{:keys [channel user text ts thread-ts] :as message}
+                   {:keys [member-slack->db-id chan-slack-id->id] :as cache}]
   (let [member-id (get member-slack->db-id user)
+        channel-id (get chan-slack-id->id channel)
+        _ (println cache user channel member-id channel-id)
         parent-id (when (and thread-ts (not= thread-ts ts))
                     {:select [:id]
                      :from [:message]
@@ -31,7 +34,7 @@
                :parent parent-id
                :deleted-ts nil}]
     {:insert-into [:message]
-     :values value
+     :values [value]
      ;;:on-conflict []
      :on-conflict {:on-constraint :message_channel_id_ts_key}
      :do-update-set {:fields [:text :channel-id]}
@@ -87,21 +90,36 @@
    :do-update-set {:fields [:name]}})
 
 (defn reaction-removed->tx [{:keys [item user reaction]}
-                            {:keys [member-slack->db-id message-ts->db-id] :as cache}]
-  {:delete []
-   :from [:reaction]
-   :where [:and [:= :channel-id (:channel item)]
-           [:= :member-id (get member-slack->db-id user)]
-           [:= :message-id (get message-ts->db-id (:ts item))]
-           [:= :reaction reaction]]})
+                            {:keys [member-slack->db-id
+                                    chan-slack-id->id] :as cache}]
+  (let [channel-id (get chan-slack-id->id (:channel item))]
+    {:delete []
+     :from [:reaction]
+     :where [:and
+             [:= :channel-id channel-id]
+             [:= :member-id (get member-slack->db-id user)]
+             [:is :message-id {:select [:id]
+                               :from [:message]
+                               :limit 1
+                               :where [:and
+                                       [:= :ts (:ts item)]
+                                       [:= :channel-id channel-id]]}]
+             [:= :reaction reaction]]}))
 
 (defn reaction->tx [{:keys [item user reaction]}
-                    {:keys [member-slack->db-id message-ts->db-id] :as cache}]
-  {:insert-into [:reaction]
-   :values [{:channel-id (:channel item)
-             :member-id (get member-slack->db-id user)
-             :message-id (get message-ts->db-id (:ts item))
-             :reaction reaction}]})
+                    {:keys [member-slack->db-id
+                            chan-slack-id->id] :as cache}]
+  (let [channel-id (get chan-slack-id->id (:channel item))]
+    {:insert-into [:reaction]
+     :values [{:channel-id channel-id
+               :member-id (get member-slack->db-id user)
+               :message-id {:select [:id]
+                            :from [:message]
+                            :limit 1
+                            :where [:and
+                                    [:= :ts (:ts item)]
+                                    [:= :channel-id channel-id]]}
+               :reaction reaction}]}))
 
 (defn reactions->tx [{:keys [channel-id user reactions ts thread-ts] :as message}
                      {:keys [member-slack->db-id message-ts->db-id] :as cache}]
