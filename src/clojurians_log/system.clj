@@ -22,15 +22,16 @@
       :ds (ig/ref :clojurians-log.db.core/datasource)}
      :clojurians-log.db.core/datasource
      {:dbtype "postgres"
-      :user (profile {:prod (secret :db :user) :dev "myuser"})
+      :user (or (secret :db :user) "myuser")
       :port (profile {:prod 5432 :dev 54321})
-      :password (profile {:prod (secret :db :password) :dev "mypass"})
+      :password (or (secret :db :password) "mypass")
       :dbname (or (secret :db :dbname) "clojurians_log")
       :serverTimezone "UTC"}
      :clojurians-log.slack.socket/app
      {:ds (ig/ref :clojurians-log.db.core/datasource)
       :slack-app-token (or (secret :slack-socket :app-token) "xapp-12345-67890")
-      :slack-bot-token (or (secret :slack-socket :bot-token) "xoxb-12345-67890")}
+      :slack-bot-token (or (secret :slack-socket :bot-token) "xoxb-12345-67890")
+      :tx-log-directory (or (secret :tx-log-directory) "/data/tx-logs")}
      :clojurians-log.db.core/migrations
      {:opts {:store                :database
              :migration-dir        "migrations/"
