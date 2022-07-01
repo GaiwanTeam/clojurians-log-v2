@@ -23,7 +23,7 @@
      :clojurians-log.db.core/datasource
      {:dbtype "postgres"
       :user (or (secret :db :user) "myuser")
-      :port (profile {:prod 5432 :dev 54321})
+      :port (or (secret :db :port) "5432")
       :password (or (secret :db :password) "mypass")
       :dbname (or (secret :db :dbname) "clojurians_log")
       :serverTimezone "UTC"}
