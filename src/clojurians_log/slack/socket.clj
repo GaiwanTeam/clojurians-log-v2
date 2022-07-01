@@ -28,7 +28,7 @@
     (reset! cache (queries/get-cache ds)))
   (let [event (cske/transform-keys csk/->kebab-case-keyword event)]
     (prn event)
-    (slack-import/from-event event ds @cache))
+    #_(slack-import/from-event event ds @cache))
   (println "-------"))
 
 (defn create-handler
