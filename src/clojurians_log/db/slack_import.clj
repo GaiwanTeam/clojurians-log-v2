@@ -4,6 +4,7 @@
    [camel-snake-kebab.extras :as cske]
    [clojure.java.io :as io]
    [clojurians-log.db.import :as import]
+   [clojurians-log.db.queries :as queries]
    [honey.sql :as sql]
    [next.jdbc :as jdbc]))
 
@@ -70,19 +71,26 @@
   [event ds cache]
   (println "Event import not caught of type: " (:type event)))
 
-(defn from-file [f ds cache]
+(defn from-file [f ds]
   (with-open [reader (io/reader f)]
     (doseq [line (line-seq reader)]
       (let [event (->> line
                        read-string
                        (cske/transform-keys csk/->kebab-case-keyword))]
-        (from-event event ds cache)))))
+        (from-event event ds (queries/get-cache ds))))))
 
-(defn from-dir [dir ds cache]
+(defn from-dir [dir ds]
   (let [dir (io/file dir)
         files (->> dir
                    file-seq
                    (filter #(.isFile %))
                    sort)]
     (doseq [f files]
-      (from-file f ds cache))))
+      (from-file f ds))))
+
+
+(comment
+  (require '[integrant.repl.state :as ig-state])
+  (def ds (:clojurians-log.db.core/datasource ig-state/system))
+  (from-file "/tmp/2022-05-17.edn" ds)
+  )
