@@ -16,7 +16,10 @@
   "Imports channels idempotently based on the slack_id"
   [ds path-or-data]
   (cond
-    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
+    (instance? java.io.File path-or-data)
+    (channels ds (utils/read-json-from-file path-or-data))
+    (string? path-or-data)
+    (channels ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
           data (into []
@@ -40,7 +43,11 @@
   "Imports members idempotently based on the (slack) id"
   [ds path-or-data]
   (cond
-    (string? path-or-data) (channels ds (utils/read-json-from-file (io/file path-or-data "users.json")))
+    (instance? java.io.File path-or-data)
+    (doseq [members-chunk (partition-all 100 (utils/read-json-from-file path-or-data))]
+      (members ds members-chunk))
+    (string? path-or-data)
+    (members ds (utils/read-json-from-file (io/file path-or-data "users.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
           ;; TODO: use member->tx here
@@ -144,17 +151,14 @@
                              }]
           (when (seq message-vals)
             (let [inserted-messages (jdbc/execute! ds (sql/format message-query))
-                  _ (println "INSERTED HERE")
                   cache (assoc cache :message-ts->db-id (into {}
                                                               (map (juxt :ts :id))
                                                               inserted-messages))
                   reaction-vals (remove nil? (mapcat #(import/reactions->tx % cache)
                                                      (filter :reactions data)))
-                  _ (println "reaction vals " reaction-vals)
                   reaction-query {:insert-into [:reaction]
                                   :values reaction-vals}]
               (when (seq reaction-vals)
-                (println "Added rx")
                 (jdbc/execute! ds (sql/format reaction-query))))))))
     (println (format "%4d files [%10.2f s] <- %s"
                      @file-count
