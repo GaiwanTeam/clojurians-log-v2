@@ -5,8 +5,9 @@ services:
     image: postgres
     restart: always
     ports:
-      - "54321:5432"
+      - "54100:5432"
     environment:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: mypass
       POSTGRES_DB: clojurians_log
+      # POSTGRES_DB: doesarchive

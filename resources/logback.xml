@@ -40,6 +40,6 @@
   <logger name="user" level="ALL" />
   <logger name="co.gaiwan" level="ALL" />
   <logger name="lambdaisland" level="ALL" />
-  <logger name="clojurians_log" level="ALL" />
+  <logger name="clojurians-log" level="ALL" />
   
 </configuration>
