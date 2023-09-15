@@ -149,7 +149,7 @@
    :member-slack->db-id (member-cache ds)})
 
 (comment
-  (def ds (:clojurians-log.db.core/datasource ig-state/system))
+  (def ds (user/ds))
 
   (single-message ds 2 "1652821554.591519")
 
