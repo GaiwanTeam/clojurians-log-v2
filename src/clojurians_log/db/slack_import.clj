@@ -2,6 +2,7 @@
   (:require
    [camel-snake-kebab.core :as csk]
    [camel-snake-kebab.extras :as cske]
+   [clojure.data.json :as json]
    [clojure.java.io :as io]
    [clojurians-log.db.import :as import]
    [clojurians-log.db.queries :as queries]
@@ -71,26 +72,27 @@
   [event ds cache]
   (println "Event import not caught of type: " (:type event)))
 
-(defn from-file [f ds]
-  (with-open [reader (io/reader f)]
-    (doseq [line (line-seq reader)]
-      (let [event (->> line
-                       read-string
-                       (cske/transform-keys csk/->kebab-case-keyword))]
-        (from-event event ds (queries/get-cache ds))))))
+(defn from-file [f ds & {:keys [is-json?]}]
+  (let [read-func (if is-json? json/read-str read-string)]
+    (with-open [reader (io/reader f)]
+      (doseq [line (line-seq reader)]
+        (let [event (->> line
+                         read-func
+                         (cske/transform-keys csk/->kebab-case-keyword))]
+          (from-event event ds (queries/get-cache ds)))))))
 
-(defn from-dir [dir ds]
+(defn from-dir [dir ds & {:keys [is-json?] :as opts}]
   (let [dir (io/file dir)
         files (->> dir
                    file-seq
                    (filter #(.isFile %))
                    sort)]
     (doseq [f files]
-      (from-file f ds))))
-
+      (from-file f ds opts))))
 
 (comment
-  (require '[integrant.repl.state :as ig-state])
-  (def ds (:clojurians-log.db.core/datasource ig-state/system))
+  (def ds (user/ds))
   (from-file "/tmp/2022-05-17.edn" ds)
+  (from-file "/Users/ox/Downloads/does-slack-archive/2021-05-01.txt" ds {:is-json? true})
+  (json/read-str "{\"hello\": \"world\"}")
   )
