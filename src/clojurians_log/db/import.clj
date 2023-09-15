@@ -1,6 +1,7 @@
 (ns clojurians-log.db.import
   (:require
    [clojure.string :as string]
+   [lambdaisland.glogc :as log]
    [clojurians-log.db.queries :as queries]
    [clojurians-log.time-utils :as time-utils]
    [clojurians-log.utils :as utils]))
@@ -14,11 +15,11 @@
   ;; about
   nil)
 
-(defn message->tx [{:keys [channel user text ts thread-ts] :as message}
+(defn message->tx [{:keys [channel channel-id user text ts thread-ts] :as message}
                    {:keys [member-slack->db-id chan-slack-id->id] :as cache}]
   (let [member-id (get member-slack->db-id user)
-        channel-id (get chan-slack-id->id channel)
-        _ (println cache user channel member-id channel-id)
+        channel-id (or channel-id (get chan-slack-id->id channel))
+        _ (log/debug :user user :member-id member-id :channel-id channel-id)
         parent-id (when (and thread-ts (not= thread-ts ts))
                     {:select [:id]
                      :from [:message]
