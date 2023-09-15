@@ -12,14 +12,14 @@
 
 (def ds (:clojurians-log.db.core/datasource ig-state/system))
 
-(defn channels
-  "Imports channels idempotently based on the slack_id"
+(defn insert-channels!
+  "Inserts channels into db idempotently based on the slack_id"
   [ds path-or-data]
   (cond
     (instance? java.io.File path-or-data)
-    (channels ds (utils/read-json-from-file path-or-data))
+    (insert-channels! ds (utils/read-json-from-file path-or-data))
     (string? path-or-data)
-    (channels ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
+    (insert-channels! ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
           data (into []
