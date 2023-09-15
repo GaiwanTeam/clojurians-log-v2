@@ -36,7 +36,8 @@
           sqlmap {:insert-into [:channel]
                   :values data
                   :on-conflict :slack-id
-                  :do-update-set {:fields [:name :topic :purpose]}}]
+                  :do-update-set {:fields [:name :topic :purpose]}
+                  :returning [:id]}]
       (jdbc/execute! ds (sql/format sqlmap)))))
 
 (defn members
@@ -110,7 +111,8 @@
                                            :tz-label
                                            :deleted
                                            :bot-id
-                                           :is-email-confirmed]}}
+                                           :is-email-confirmed]}
+                  :returning [:slack-id :name]}
           sqlquery (sql/format sqlmap)]
       (jdbc/execute! ds sqlquery))))
 
@@ -172,6 +174,26 @@
                    {:user (:slack-bot-user (system/secrets))})]
     (mapv :name bot-chans)))
 
+(defn member-import-from-api!
+  "Imports members from the Slack API."
+  [slack-conn]
+  (let [slack-users (clj-slack/get-users slack-conn)]
+    (doall
+     (mapcat #(members ds %) (partition-all 100 slack-users)))
+    #_(doall
+       (apply
+        concat
+        (for [p-users (partition-all 100 slack-users)]
+          (members ds p-users))))))
+
+(defn channel-import-from-api!
+  "Imports channels from the Slack API."
+  [slack-conn]
+  (let [slack-channels (clj-slack/get-channels slack-conn)
+        allowed-chans (set (log-bot-channels))
+        slack-channels-to-log (filter #(contains? allowed-chans (:name %)) slack-channels)]
+    (insert-channels! ds slack-channels-to-log)))
+
 (defn channel-member-import
   "Import channel data and member data from path of slack data directory.
   If path is nil, imports from the slack api."
@@ -184,17 +206,13 @@
         imported-channels
         (if (.exists chan-file)
           ;; TODO: filter allowed channels for file import too
-          (channels ds chan-file)
-          (let [slack-channels (clj-slack/get-channels slack-conn)
-                allowed-chans (set (log-bot-channels))
-                slack-channels-to-log (filter #(contains? allowed-chans (:name %)) slack-channels)]
-            (channels ds slack-channels-to-log)))
+          (insert-channels! ds chan-file)
+          (channel-import-from-api! slack-conn))
         imported-members-list
         (if (.exists members-file)
           (members ds members-file)
-          (let [slack-users (clj-slack/get-users slack-conn)]
-            (for [p-users (partition-all 100 slack-users)]
-              (members ds p-users))))
+          (member-import-from-api! slack-conn)
+          )
         stats {:imported-channels-count
                (-> imported-channels first :next.jdbc/update-count)
                :imported-members-count
