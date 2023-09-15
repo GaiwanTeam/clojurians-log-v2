@@ -138,7 +138,9 @@
                             :where [:and
                                     [:= :ts (:ts item)]
                                     [:= :channel-id channel-id]]}
-               :reaction reaction}]}))
+               :reaction reaction}]
+     :on-conflict {:on-constraint :reaction_member_id_channel_id_message_id_reaction_key}
+     :do-nothing true}))
 
 (defn reactions->tx [{:keys [channel-id user reactions ts thread-ts] :as message}
                      {:keys [member-slack->db-id message-ts->db-id] :as cache}]
