@@ -82,9 +82,9 @@
      :tx-log (create-event-tx-logger config event-ch)
      :event-ch event-ch}))
 
-(defmethod ig/halt-key! ::app [_ {:keys [^SocketModeApp socket-app event-ch]}]
+(defmethod ig/halt-key! ::app [_ {:keys [^SocketModeApp socket event-ch]}]
   ;; (log/info :socket-app/stoping :now)
-  (.stop ^SocketModeApp socket-app)
+  (.stop ^SocketModeApp socket)
   (async/close! event-ch))
 
 (comment
