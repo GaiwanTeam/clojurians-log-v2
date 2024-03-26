@@ -13,8 +13,10 @@
 (defmethod ig/halt-key! ::datasource [_ datasource]
   ())
 
-(defmethod ig/init-key ::migrations [_ {:keys [ds opts] :as config}]
-  (merge opts {:db {:datasource (jdbc/get-datasource ds)}}))
+(defmethod ig/init-key ::migrations [_ {:keys [ds opts]}]
+  (let [config (merge opts {:db {:datasource (jdbc/get-datasource ds)}})]
+    (migrations/migrate config)
+    config))
 
 (defmethod ig/halt-key! ::migrations [_ config]
   ())
