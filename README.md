@@ -98,7 +98,7 @@ $ clj -A:dev
 To use psql on the docker postgres
 
 ``` sh
-docker exec -it clojurians-log-v2_db_1 psql -U myuser clojurians_log
+docker compose exec -it db psql -U myuser clojurians_log
 ```
 
 To use pgcli instead
