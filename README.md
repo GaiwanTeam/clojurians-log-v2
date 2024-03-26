@@ -88,7 +88,7 @@ the way we log currently.
 * To start css watchers, run `make dev`
 * To start postgres db, run `docker compose up`
 
-To jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8080
+To jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8000
 
 ``` sh
 $ clj -A:dev
