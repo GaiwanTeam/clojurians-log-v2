@@ -3,3 +3,5 @@
 /resources/secrets.edn
 /node_modules
 /resources/config/secrets*.edn
+.cpcache/
+.nrepl-port
