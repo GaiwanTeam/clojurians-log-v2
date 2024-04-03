@@ -1,0 +1,11 @@
+#!/usr/bin/env bb
+
+(require
+ '[lambdaisland.launchpad :as launchpad])
+
+(launchpad/main
+ {:middleware []
+  :eval-forms []
+  :pre-steps
+  [(launchpad/run-process {:cmd '[npm install]})
+   (launchpad/run-process {:cmd '[docker compose up -d --no-recreate]})]})

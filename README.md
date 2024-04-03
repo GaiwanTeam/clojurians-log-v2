@@ -2,7 +2,7 @@
 
 YAY! This project has been funded by ClojuristsTogether: https://www.clojuriststogether.org/news/q3-2021-funding-announcement/
 
-This is a v2 of [clojurians-log-app](https://github.com/clojureverse/clojurians-log-app) 
+This is a v2 of [clojurians-log-app](https://github.com/clojureverse/clojurians-log-app)
 
 ## Why v2?
 
@@ -30,10 +30,10 @@ archive to update), permalinks to threads/conversations
 - improve performance & reduce resource consumption so we can
 run this on a much smaller instance
 - better statistics reporting (automated stats email to admins/staff)
-- open analytics 
+- open analytics
 - support for images and attachments
 - fix all of the SEO issues (internal links showing up on google, better indexing, etc)
-- more documentation to make it even more easier for folks to contribute 
+- more documentation to make it even more easier for folks to contribute
 - possibly automated email digests tracking specific keywords
 - slack-bot custom commands
   - delete / anonymise a user
@@ -53,7 +53,7 @@ more about this:
 
 *Some cons of SSG*:
 - regenerating pages on delete events (these can go back upto a few weeks)
-- regenerating pages on new reactions added 
+- regenerating pages on new reactions added
 - incremental generation is hard
 - generating links (which date preceed and succeed #channel-foo on 2021-05-30
 which have existing messages)
@@ -84,28 +84,27 @@ the way we log currently.
 
 ## Development
 
-* For first time setup, run `make init`
-* To start css watchers, run `make dev`
-* To start postgres db, run `docker compose up`
+Use `launchpad` to run the database + app, and launch a REPL connected to your Emacs server:
 
-To jack-in to a clojure repl and run `(go)` to start the local http server at http://localhost:8000
-
-``` sh
-$ clj -A:dev
-> (go)
+```sh
+bin/launchpad dev --emacs --go
 ```
 
-To use psql on the docker postgres
+The app will run at http://localhost:8000.
+
+To start css watchers, run `make dev`.
+
+To use psql on the docker postgres:
 
 ``` sh
 docker compose exec -it db psql -U myuser clojurians_log
 ```
 
-To use pgcli instead
+To use pgcli instead:
 
 ``` sh
 pip install -U pgcli
-make pgcli 
+make pgcli
 # if it asks for a pass enter "mypass"
 ```
 
