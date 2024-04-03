@@ -14,7 +14,16 @@
    (com.slack.api.bolt App AppConfig)
    (com.slack.api.bolt.handler BoltEventHandler)
    (com.slack.api.bolt.socket_mode SocketModeApp)
-   (com.slack.api.model.event ChannelCreatedEvent ChannelRenameEvent MessageChangedEvent MessageChannelJoinEvent MessageDeletedEvent MessageEvent MessageRepliedEvent ReactionAddedEvent ReactionRemovedEvent)))
+   (com.slack.api.model.event ChannelCreatedEvent
+                              ChannelRenameEvent
+                              MessageChangedEvent
+                              MessageChannelJoinEvent
+                              MessageDeletedEvent
+                              MessageEvent
+                              MessageRepliedEvent
+                              UserChangeEvent
+                              ReactionAddedEvent
+                              ReactionRemovedEvent)))
 
 (set! *warn-on-reflection* true)
 
@@ -62,6 +71,7 @@
               (.event MessageChannelJoinEvent handler)
               (.event ChannelRenameEvent handler)
               (.event ChannelCreatedEvent handler)
+              (.event UserChangeEvent handler)
               (.event ReactionAddedEvent handler)
               (.event ReactionRemovedEvent handler))]
     (doto (SocketModeApp. ^String slack-app-token app)
