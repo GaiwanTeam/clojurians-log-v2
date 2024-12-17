@@ -1,14 +1,3 @@
-DROP table if exists channel CASCADE;
---;;
-DROP table if exists member CASCADE;
---;;
-DROP table if exists reaction CASCADE;
---;;
-DROP table if exists file CASCADE;
---;;
-DROP table if exists message CASCADE;
---;;
-
 CREATE table if not exists channel (
  id integer primary key generated always as identity,
  slack_id text unique not null,

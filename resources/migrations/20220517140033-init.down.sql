@@ -1,0 +1,10 @@
+DROP table if exists channel CASCADE;
+--;;
+DROP table if exists member CASCADE;
+--;;
+DROP table if exists reaction CASCADE;
+--;;
+DROP table if exists file CASCADE;
+--;;
+DROP table if exists message CASCADE;
+--;;
