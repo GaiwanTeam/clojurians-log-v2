@@ -1,25 +1,24 @@
 (ns clojurians-log.db.bulk-import
   (:require
    [clojure.java.io :as io]
+   [clojurians-log.config :as config]
+   [clojurians-log.db :as db]
    [clojurians-log.db.import :as import]
    [clojurians-log.db.queries :as queries]
-   [clojurians-log.slack.api :as clj-slack]
+   [clojurians-log.slack.api :as slack-api]
    [clojurians-log.system :as system]
    [clojurians-log.utils :as utils]
    [honey.sql :as sql]
-   [integrant.repl.state :as ig-state]
    [next.jdbc :as jdbc]))
-
-(def ds (:clojurians-log.db.core/datasource ig-state/system))
 
 (defn insert-channels!
   "Inserts channels into db idempotently based on the slack_id"
-  [ds path-or-data]
+  [path-or-data]
   (cond
     (instance? java.io.File path-or-data)
-    (insert-channels! ds (utils/read-json-from-file path-or-data))
+    (insert-channels! (utils/read-json-from-file path-or-data))
     (string? path-or-data)
-    (insert-channels! ds (utils/read-json-from-file (io/file path-or-data "channels.json")))
+    (insert-channels! (utils/read-json-from-file (io/file path-or-data "channels.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
           data (into []
@@ -38,17 +37,17 @@
                   :on-conflict :slack-id
                   :do-update-set {:fields [:name :topic :purpose]}
                   :returning [:id]}]
-      (jdbc/execute! ds (sql/format sqlmap)))))
+      (db/execute! (sql/format sqlmap)))))
 
 (defn members
   "Imports members idempotently based on the (slack) id"
-  [ds path-or-data]
+  [path-or-data]
   (cond
     (instance? java.io.File path-or-data)
     (doseq [members-chunk (partition-all 100 (utils/read-json-from-file path-or-data))]
-      (members ds members-chunk))
+      (members members-chunk))
     (string? path-or-data)
-    (members ds (utils/read-json-from-file (io/file path-or-data "users.json")))
+    (members (utils/read-json-from-file (io/file path-or-data "users.json")))
     (seq path-or-data)
     (let [slack-data path-or-data
           ;; TODO: use member->tx here
@@ -114,11 +113,11 @@
                                            :is-email-confirmed]}
                   :returning [:slack-id :name]}
           sqlquery (sql/format sqlmap)]
-      (jdbc/execute! ds sqlquery))))
+      (db/execute! sqlquery))))
 
 (defn messages
   "Imports messages idempotently based on the slack_id"
-  [ds path channel cache]
+  [path channel cache]
   (let [start# (. System (nanoTime))
         channel-dir (io/file path channel)
         msg-files (sort (file-seq channel-dir))
@@ -152,7 +151,7 @@
                              :returning [:ts :id]
                              }]
           (when (seq message-vals)
-            (let [inserted-messages (jdbc/execute! ds (sql/format message-query))
+            (let [inserted-messages (db/execute! (sql/format message-query))
                   cache (assoc cache :message-ts->db-id (into {}
                                                               (map (juxt :ts :id))
                                                               inserted-messages))
@@ -161,56 +160,55 @@
                   reaction-query {:insert-into [:reaction]
                                   :values reaction-vals}]
               (when (seq reaction-vals)
-                (jdbc/execute! ds (sql/format reaction-query))))))))
+                (db/execute! (sql/format reaction-query))))))))
     (println (format "%4d files [%10.2f s] <- %s"
                      @file-count
                      (/ (double (- (. System (nanoTime)) start#)) 1000000000.0)
                      channel))))
 
 (defn log-bot-channels []
-  (let [slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token]))
-        bot-chans (clj-slack/get-users-conversations
+  (let [slack-conn (slack-api/conn (config/get :slack-socket/bot-token))
+        bot-chans (slack-api/get-users-conversations
                    slack-conn
-                   {:user (:slack-bot-user (system/secrets))})]
+                   {:user (config/get :slack/bot-user)})]
     (mapv :name bot-chans)))
 
 (defn member-import-from-api!
   "Imports members from the Slack API."
   [slack-conn]
-  (let [slack-users (clj-slack/get-users slack-conn)]
+  (let [slack-users (slack-api/get-users slack-conn)]
     (doall
-     (mapcat #(members ds %) (partition-all 100 slack-users)))
+     (mapcat #(members %) (partition-all 100 slack-users)))
     #_(doall
        (apply
         concat
         (for [p-users (partition-all 100 slack-users)]
-          (members ds p-users))))))
+          (members p-users))))))
 
 (defn channel-import-from-api!
   "Imports channels from the Slack API."
   [slack-conn]
-  (let [slack-channels (clj-slack/get-channels slack-conn)
+  (let [slack-channels (slack-api/get-channels slack-conn)
         allowed-chans (set (log-bot-channels))
         slack-channels-to-log (filter #(contains? allowed-chans (:name %)) slack-channels)]
-    (insert-channels! ds slack-channels-to-log)))
+    (insert-channels! slack-channels-to-log)))
 
 (defn channel-member-import
   "Import channel data and member data from path of slack data directory.
   If path is nil, imports from the slack api."
   [& [{:keys [path]
        :or {path nil}}]]
-  (let [slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token]))
+  (let [slack-conn (slack-api/conn (config/get :slack-socket/bot-token))
         chan-file (io/file path "channels.json")
         members-file (io/file path "users.json")
-        ds (queries/repl-ds)
         imported-channels
         (if (.exists chan-file)
           ;; TODO: filter allowed channels for file import too
-          (insert-channels! ds chan-file)
+          (insert-channels! chan-file)
           (channel-import-from-api! slack-conn))
         imported-members-list
         (if (.exists members-file)
-          (members ds members-file)
+          (members members-file)
           (member-import-from-api! slack-conn)
           )
         stats {:imported-channels-count
@@ -221,17 +219,17 @@
     stats))
 
 (defn messages-all [path]
-  (for [chan (queries/all-channels (queries/repl-ds))]
-    (messages ds path (:name chan) (queries/get-cache ds))))
+  (for [chan (queries/all-channels)]
+    (messages path (:name chan) (queries/get-cache))))
 
 (comment
   ;; eval buffer then eval this do form to populate db
   ;; make sure slack archive is stored in src/sample_data
   (defn exec [sqlmap]
     (println (sql/format sqlmap))
-    (jdbc/execute! ds (sql/format sqlmap)))
+    (db/execute! (sql/format sqlmap)))
 
-  (def slack-conn (clj-slack/conn (get-in (system/secrets) [:slack-socket :bot-token])))
+  (def slack-conn (slack-api/conn (config/get :slack-socket/bot-token)))
   slack-conn
 
   (channel-member-import)
@@ -239,11 +237,11 @@
 
   (def path "../clojurians-log-data/sample_data")
 
-  (messages ds path "announcements" (queries/get-cache ds))
+  (messages path "announcements" (queries/get-cache))
 
   (in-ns 'clojurians-log.db.bulk-import)
   (use 'clojurians-log.db.bulk-import)
-  (messages ds "/data/2021-10-31" "announcements" (queries/get-cache ds))
+  (messages "/data/2021-10-31" "announcements" (queries/get-cache))
 
   (messages-all path)
 
@@ -253,20 +251,20 @@
                          :message-id 23515}]
                #_#_:on-conflict {}
                :returning [:channel-id :id]}]
-    (jdbc/execute! ds (sql/format query)))
+    (db/execute! (sql/format query)))
 
   (let [query {:delete-from [:reaction]
                :returning [:id]}]
-    (jdbc/execute! ds (sql/format query)))
+    (db/execute! (sql/format query)))
 
   (let [query {:select [:*]
                :from [:reaction]
                :limit 5}]
-    (jdbc/execute! ds (sql/format query {:return-keys true})))
+    (db/execute! (sql/format query {:return-keys true})))
 
   (let [query {:select [[[:count :*]]]
                :from [:reaction]}]
-    (jdbc/execute! ds (sql/format query {:return-keys true})))
+    (db/execute! (sql/format query {:return-keys true})))
 
   (let [query #_{:insert-into [:reaction]
                  :values [{:channel-id 1
@@ -278,6 +276,6 @@
                  [:= :member-id 1829]
                  [:= :channel-id 1]]
          :limit 2}]
-    (jdbc/execute! ds (sql/format query {:return-keys true})))
+    (db/execute! (sql/format query {:return-keys true})))
 
   ,)

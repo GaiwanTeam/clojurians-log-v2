@@ -4,12 +4,13 @@
   (:require
    [camel-snake-kebab.core :as csk]
    [camel-snake-kebab.extras :as cske]
+   [clojurians-log.config :as config]
    [clojure.core.async :as async]
    [clojure.java.data :as jd]
    [clojure.java.io :as io]
    [clojurians-log.db.queries :as queries]
-   [clojurians-log.db.slack-import :as slack-import]
-   [integrant.core :as ig])
+   [clojurians-log.db :as db]
+   [clojurians-log.db.slack-import :as slack-import])
   (:import
    (com.slack.api.bolt App AppConfig)
    (com.slack.api.bolt.handler BoltEventHandler)
@@ -85,15 +86,20 @@
         (spit tx-log-file (prn-str event) :append true))
       (recur))))
 
-(defmethod ig/init-key ::app [_ config]
+(def !slack-socket (atom nil))
+(defn init! []
   ;; (log/info :socket-app/starting :now)
-  (let [event-ch (async/chan 100)]
-    {:socket (create-socket-app config event-ch)
-     :tx-log (create-event-tx-logger config event-ch)
-     :event-ch event-ch}))
+  (let [config {:ds @(db/ds)
+                :slack-app-token (config/get :slack-socket/app-token)
+                :slack-bot-token (config/get :slack-socket/bot-token)
+                :tx-log-directory (config/get :slack-socket/tx-log-directory)}
+        event-ch (async/chan 100)
+        socket {:socket (create-socket-app config event-ch)
+                :tx-log (create-event-tx-logger config event-ch)
+                :event-ch event-ch}]
+    (reset! !slack-socket socket)))
 
-(defmethod ig/halt-key! ::app [_ {:keys [^SocketModeApp socket event-ch]}]
-  ;; (log/info :socket-app/stoping :now)
+(defn deinit! [{:keys [^SocketModeApp socket event-ch]}]
   (.stop ^SocketModeApp socket)
   (async/close! event-ch))
 

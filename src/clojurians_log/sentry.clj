@@ -1,13 +1,11 @@
 (ns clojurians-log.sentry
-  (:require [integrant.core :as ig])
+  (:require [clojurians-log.config :as config])
   (:import (io.sentry Sentry)))
 
-(defmethod ig/init-key ::alerts [_ {:keys [sentry-dsn]}]
-  #_(.init Sentry (fn [opts]
+(defn init! []
+  (when-let [sentry-dsn (config/get :sentry/dsn)]
+    (.init Sentry (fn [opts]
                     (doto opts
                       (.setDsn sentry-dsn)
                       (.setTracesSampleRate 1.0)
-                      (.setDebug true)))))
-
-(defmethod ig/halt-key! ::server [_ server]
-  #_(.stop server))
+                      (.setDebug true))))))

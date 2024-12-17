@@ -5,8 +5,8 @@
             [clojurians-log.open-graph :as og]
             [lambdaisland.ornament :as o]))
 
-(defn handler [{:keys [ds] :as request}]
-  (let [channels (queries/all-channels ds)]
+(defn handler [request]
+  (let [channels (queries/all-channels)]
     {:status 200
      :body {:channels channels}
      :view (fn [data]
@@ -14,10 +14,10 @@
               (og/social-tags {})
               [common/home-page data]])}))
 
-(defn channel-handler [{:keys [ds path-params] :as request}]
-  (let [channel (queries/channel-by-name ds (:channel path-params))
-        channels (queries/all-channels ds)
-        message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))]
+(defn channel-handler [{:keys [path-params] :as request}]
+  (let [channel (queries/channel-by-name (:channel path-params))
+        channels (queries/all-channels)
+        message-counts-by-date (queries/channel-message-counts-by-date (:id channel))]
     {:status 200
      :body {:channels channels
             :channel channel
@@ -27,19 +27,19 @@
               (og/social-tags {:title (str (-> data :channel :name) " | Clojure Slack Archive")})
               [common/channel-page data]])}))
 
-(defn channel-date-handler [{:keys [ds path-params] :as request}]
-  (let [channel (queries/channel-by-name ds (:channel path-params))
-        channels (queries/all-channels ds)
-        member-cache-id-name (queries/member-cache-id-name ds)
-        messages (queries/messages-by-channel-date ds (:id channel) (:date path-params))
+(defn channel-date-handler [{:keys [path-params] :as request}]
+  (let [channel (queries/channel-by-name (:channel path-params))
+        channels (queries/all-channels)
+        member-cache-id-name (queries/member-cache-id-name)
+        messages (queries/messages-by-channel-date (:id channel) (:date path-params))
         messages-ids (map :message/id messages)
-        raw-replies (queries/replies-for-messages ds (:id channel) messages-ids)
+        raw-replies (queries/replies-for-messages (:id channel) messages-ids)
         raw-replies-ids (map :message/id raw-replies)
-        message-counts-by-date (queries/channel-message-counts-by-date ds (:id channel))
-        reactions (->> (queries/reactions-for-messages ds
-                                                       (:id channel)
-                                                       (concat messages-ids
-                                                               raw-replies-ids))
+        message-counts-by-date (queries/channel-message-counts-by-date (:id channel))
+        reactions (->> (queries/reactions-for-messages
+                        (:id channel)
+                        (concat messages-ids
+                                raw-replies-ids))
                        (group-by :reaction/message-id))
         messages (map #(assoc % :reactions (get reactions (:message/id %))) messages)
         raw-replies (map #(assoc % :reactions (get reactions (:message/id %))) raw-replies)
@@ -60,9 +60,9 @@
               (og/social-tags {:title (str (-> data :date) " " (-> data :channel :name) " | Clojure Slack Archive")})
               [common/channel-date-page data]])}))
 
-(defn search-handler [{:keys [ds query-params] :as req}]
+(defn search-handler [{:keys [query-params] :as req}]
   (let [query (get query-params "q")
-        messages (queries/search-messages ds query)]
+        messages (queries/search-messages query)]
     {:status 200
      :body {:query query
             :messages messages}

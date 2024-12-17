@@ -1,5 +1,6 @@
 (ns clojurians-log.slack.api
   (:require [clojurians-log.slack.middleware :as mw]
+            [clojurians-log.config :as config]
             [clojurians-log.slack.web :as web]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -7,7 +8,7 @@
 
 (defn conn
   ([]
-   (conn (System/getenv "SLACK_TOKEN")))
+   (conn (config/get :slack/app-token)))
   ([slack-token]
    {:api-url "https://slack.com/api" :token slack-token}))
 

@@ -1,5 +1,6 @@
 (ns clojurians-log.http
   (:require [ring.adapter.jetty :as jetty]
+            [clojurians-log.config :as config]
             [lambdaisland.ornament :as o]
             [lambdaisland.hiccup :as hiccup]
             [clojurians-log.routes :as routes]
@@ -8,7 +9,6 @@
             [muuntaja.format.core :as muuntaja-format]
             [reitit.ring.middleware.muuntaja :as muuntaja-middleware]
             [reitit.ring.middleware.parameters :as parameters]
-            [integrant.core :as ig]
             [reitit.ring :as ring])
   (:import (java.io OutputStream)
            (org.eclipse.jetty.server Server)))
@@ -52,12 +52,7 @@
         (update resp :body vary-meta assoc :view-fn
                 (comp hiccup/render view))))))
 
-(defn inject-component-middleware [config]
-  (fn [handler]
-    (fn [request]
-      (handler (merge request config)))))
-
-(defn app [config]
+(defn app []
   (ring/ring-handler
    (ring/router
     (routes/routes)
@@ -65,23 +60,21 @@
      :data {:muuntaja   (muuntaja-instance)
             :middleware [muuntaja-middleware/format-middleware
                          parameters/parameters-middleware
-                         view-fn-middleware
-                         (inject-component-middleware config)]}})
+                         view-fn-middleware]}})
    (ring/routes
     (ring/redirect-trailing-slash-handler {:method :add})
     (ring/create-resource-handler {:path "/assets" :root "public"})
     (ring/create-default-handler
      {:not-found (constantly {:status 404 :body "Page not found."})}))))
 
-(defmethod ig/init-key ::server [_ config]
-  (jetty/run-jetty #((app config) %)
-                   (-> config (assoc :join? false))))
+(def http-server (atom nil))
 
-(defmethod ig/halt-key! ::server [_ server]
-  (.stop server))
+(defn start-server []
+  (println "Starting jetty on http://localhost:" (config/get :http/port))
+  (let [config {}
+        server (jetty/run-jetty #((app) %) {:port (config/get :http/port)
+                                            :join? false})]
+    (reset! http-server server)))
 
-;; (defmethod ig/init-key ::css [_ config]
-;;   (o-watcher/start-watcher! config))
-
-;; (defmethod ig/halt-key! ::css [_ hawk]
-;;   (o-watcher/stop-watcher! hawk))
+(defn stop-server []
+  (.stop @http-server))

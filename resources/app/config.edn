@@ -1,0 +1,16 @@
+{:db/port "5432"
+ :db/user "myuser"
+ :db/password "mypass"
+ :db/name "clojurians_log"
+ :db/type "postgres"
+ :sentry/dsn nil
+
+ :http/port 9090
+
+ :slack/bot-user ""
+
+ :slack-socket/app-token "" #_"xapp-12345-67890"
+ :slack-socket/bot-token "" #_"xoxb-12345-67890"
+ :slack-socket/tx-log-directory "./tmp/tx-logs" #_"/data/tx-logs"
+
+ }
