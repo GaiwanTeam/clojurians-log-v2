@@ -5,3 +5,9 @@
 /resources/config/secrets*.edn
 .cpcache/
 .nrepl-port
+*.local.*
+target
+.shadow-cljs
+.DS_Store
+.#*
+infra/.terraform

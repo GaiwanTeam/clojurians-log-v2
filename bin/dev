@@ -1,0 +1,26 @@
+#!/usr/bin/env bb
+
+(require '[lambdaisland.cli :as cli])
+
+(def init {})
+
+(defn initialize-local-files
+  "Create local files which are not checked in"
+  [_]
+  (spit "deps.local.edn" "{:launchpad/aliases [:dev]}"))
+
+(def commands ["init" #'initialize-local-files])
+
+(def flags
+  ["-v, --verbose" "Increase verbosity"
+   "-h, --help" "Show help text for a (sub-)command"])
+
+(cli/dispatch*
+ {:name "bin/dev"
+  :init init
+  :flags flags
+  :commands commands})
+
+;; Local Variables:
+;; mode:clojure
+;; End:

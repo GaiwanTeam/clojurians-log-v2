@@ -232,7 +232,7 @@
   (def slack-conn (slack-api/conn (config/get :slack-socket/bot-token)))
   slack-conn
 
-  (channel-member-import)
+  (channel-member-import "../slack_exports/2025-03-01--2024-12-14/")
   (log-bot-channels)
 
   (def path "../clojurians-log-data/sample_data")

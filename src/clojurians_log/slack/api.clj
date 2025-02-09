@@ -1,7 +1,8 @@
 (ns clojurians-log.slack.api
-  (:require [clojurians-log.slack.middleware :as mw]
-            [clojurians-log.config :as config]
-            [clojurians-log.slack.web :as web]))
+  (:require
+   [clojurians-log.slack.middleware :as mw]
+   [clojurians-log.config :as config]
+   [clojurians-log.slack.web :as web]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Slack API functions

@@ -8,4 +8,6 @@
   :eval-forms []
   :pre-steps
   [(launchpad/run-process {:cmd '[npm install]})
+   (launchpad/run-process {:cmd '[npm run dev]
+                           :background? true})
    (launchpad/run-process {:cmd '[docker compose up -d --no-recreate]})]})
