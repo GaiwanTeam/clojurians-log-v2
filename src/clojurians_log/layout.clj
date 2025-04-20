@@ -10,9 +10,10 @@
     [:head
      [:meta {:charset "UTF-8"}]
      [:meta {:content "width=device-width, initial-scale=1" :name "viewport"}]
-     [:script {:data-goatcounter "https://clojurians-log-v2.goatcounter.com/count"
-               :async true
-               :src "//gc.zgo.at/count.js"}]
+     #_[:script {:data-goatcounter "https://clojurians-log-v2.goatcounter.com/count"
+                 :async true
+                 :src "//gc.zgo.at/count.js"}]
+     [:link {:rel "stylesheet" :href "/assets/fonts/inter.css"}]
      (when (io/resource "public/css/compiled/style.css")
        [:link {:rel "stylesheet" :href "/assets/css/compiled/style.css"}])
      (if (io/resource "public/css/compiled/ornament.css")

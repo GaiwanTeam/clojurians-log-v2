@@ -70,11 +70,12 @@
 (def http-server (atom nil))
 
 (defn start-server []
-  (println "Starting jetty on http://localhost:" (config/get :http/port))
+  (println (str "Starting jetty on http://localhost:" (config/get :http/port)))
   (let [config {}
         server (jetty/run-jetty #((app) %) {:port (config/get :http/port)
                                             :join? false})]
     (reset! http-server server)))
 
 (defn stop-server []
-  (.stop @http-server))
+  (when-let [server @http-server]
+    (.stop server)))

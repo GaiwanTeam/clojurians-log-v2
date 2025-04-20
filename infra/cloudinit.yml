@@ -1,0 +1,35 @@
+#cloud-config
+users:
+  - name: root
+    groups: root
+    homedir: /root
+package_update: true
+packages:
+  - curl
+  - htop
+  - git
+  - tmux
+  - locales-all
+  - fail2ban
+  - openjdk-17-jdk
+  - rlwrap
+  - netcat-openbsd
+  - ed
+  - vim
+  - emacs
+  - unzip
+  - nginx
+runcmd:
+  - 'mkdir -p /root/bin'
+  - 'curl -Ls --fail https://gist.githubusercontent.com/plexus/0b5d4d4c04aecaf4bfb0e012d425db40/raw/7ca62c5d8c16db86455106459400f6515f329a91/auto_ssh_keys > /root/bin/auto_ssh_keys'
+  - 'chmod +x /root/bin/auto_ssh_keys'
+  - 'OVERWRITE_SSH_AUTHORIZED_KEYS=OK HOME=/root /root/bin/auto_ssh_keys'
+  - '(crontab -l || true && echo "10 10 * * * OVERWRITE_SSH_AUTHORIZED_KEYS=OK /root/bin/auto_ssh_keys") | crontab -'
+  - 'touch /var/lib/cloud/instance/locale-check.skip'
+  - 'mkdir /ansible-tmp'
+  - 'chmod 777 /ansible-tmp'
+  - 'curl -L -O https://github.com/clojure/brew-install/releases/latest/download/linux-install.sh'
+  - 'chmod +x linux-install.sh'
+  - './linux-install.sh'
+  - 'rm linux-install.sh'
+  - 'curl https://raw.githubusercontent.com/lambdaisland/open-source/refs/heads/main/bin/install_babashka | sh -s /usr/local/bin'

@@ -4,9 +4,10 @@
   `(requiring-resolve '~sym))
 
 (defn go [& [opts]]
-  ((jit clojurians-log.system/stop!) opts)
+  ((jit clojurians-log.system/stop!) #_ opts)
   ((jit clojurians-log.system/go) opts))
 
 (defn browse []
   ((jit clojure.java.browse/browse-url)
-   "http://localhost:8000"))
+   (str "http://localhost:"
+        ((jit clojurians-log.config/get) :http/port))))

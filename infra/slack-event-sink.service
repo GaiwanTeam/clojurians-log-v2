@@ -1,0 +1,15 @@
+# /etc/systemd/system/compass.service
+[Unit]
+Description=Slack Event Sync
+Wants=network.target
+After=network-online.target
+
+[Service]
+Restart=always
+RestartSec=1
+Environment="SLACK_EVENT_SINK__ENV=prod"
+WorkingDirectory=/srv/slack-event-sink
+ExecStart=clojure -J-Dclojure.main.report=stderr -J-Dclojure.server.repl='{:port 5555 :accept clojure.core.server/repl}' -M -m co.gaiwan.slack-event-sink start
+
+[Install]
+WantedBy=multi-user.target

@@ -1,44 +1,43 @@
 {:paths ["src" "resources"]
  :deps {;; core
-        org.clojure/clojure {:mvn/version "1.11.1"}
-        org.clojure/core.async {:mvn/version "1.5.648"}
+        org.clojure/clojure {:mvn/version "1.12.0"}
+        org.clojure/core.async {:mvn/version "1.7.701"}
 
         ;; app setup & config
         aero/aero           {:mvn/version "1.1.6"}
-        lambdaisland/glogi {:mvn/version "1.0.106"}
-        com.lambdaisland/config {:mvn/version "0.1.6"}
-        io.pedestal/pedestal.log       {:mvn/version "0.5.8"}
-        ch.qos.logback/logback-classic {:mvn/version "1.2.3"}
+        lambdaisland/glogi {:mvn/version "1.3.169"}
+        com.lambdaisland/config {:mvn/version "0.4.17"}
+        io.pedestal/pedestal.log       {:mvn/version "0.7.2"}
+        ch.qos.logback/logback-classic {:mvn/version "1.5.16"}
 
         ;; http
-        ring/ring {:mvn/version "1.9.3"}
-        metosin/reitit {:mvn/version "0.5.13"}
-        hato/hato {:mvn/version "0.8.0"}
+        ring/ring {:mvn/version "1.13.0"}
+        metosin/reitit {:mvn/version "0.7.2"}
+        hato/hato {:mvn/version "1.0.0"}
         lambdaisland/webstuff {:git/url "https://github.com/lambdaisland/webstuff"
                                :sha     "de8edbac497910cca07f6cf8887fba300ba016ad"}
 
         ;; data formats
-        org.clojure/data.json {:mvn/version "1.0.0"}
-        hiccup/hiccup         {:mvn/version "2.0.0-alpha2"}
+        org.clojure/data.json {:mvn/version "2.5.1"}
+        hiccup/hiccup         {:mvn/version "2.0.0-RC4"}
         markdown-to-hiccup/markdown-to-hiccup {:mvn/version "0.6.2"}
-        lambdaisland/uri      {:mvn/version "1.4.54"}
-        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.2"}
-        metosin/malli {:mvn/version "0.12.0"}
+        lambdaisland/uri      {:mvn/version "1.19.155"}
+        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
+        metosin/malli {:mvn/version "0.17.0"}
 
         ;; Slack SDK
-        com.slack.api/bolt-socket-mode                      {:mvn/version "1.22.1"}
-        javax.websocket/javax.websocket-api                 {:mvn/version "1.1"}
-        org.glassfish.tyrus.bundles/tyrus-standalone-client {:mvn/version "1.17"}
-        com.slack.api/bolt                                  {:mvn/version "1.22.1"}
+        co.gaiwan/clj-slack {:local/root "/home/arne/Gaiwan/clj-slack"}
+        #_{:git/url "https://github.com/GaiwanTeam/clj-slack"
+           :git/sha "bba565541d868e3e234552a48c2a5ee512b1451a"}
 
         ;; db
-        com.github.seancorfield/next.jdbc {:mvn/version "1.2.659"}
-        org.postgresql/postgresql {:mvn/version "42.2.10"}
-        com.github.seancorfield/honeysql {:mvn/version "2.0.0-rc2"}
-        migratus/migratus {:mvn/version "1.3.5"}
+        com.github.seancorfield/next.jdbc {:mvn/version "1.3.981"}
+        org.postgresql/postgresql {:mvn/version "42.7.5"}
+        com.github.seancorfield/honeysql {:mvn/version "2.6.1267"}
+        migratus/migratus {:mvn/version "1.6.3"}
 
         ;; error
-        io.sentry/sentry {:mvn/version "5.7.3"}
+        io.sentry/sentry {:mvn/version "8.0.0-rc.4"}
         }
  :aliases {:dev
            {:extra-paths ["dev" "test"]

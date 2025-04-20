@@ -1,6 +1,7 @@
 (ns clojurians-log.components.common
-  (:require [clojurians-log.message.format :as mformat]
-            [clojurians-log.components.icons :as icons]))
+  (:require
+   [clojurians-log.message.format :as mformat]
+   [clojurians-log.components.icons :as icons]))
 
 (defn sidebar []
   [:div {:class "bg-indigo-900 text-purple-300 flex-none p-4"
